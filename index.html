@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Picnic Manager</title>
+<!-- PWA / iOS App-like meta -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Picnic">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a3a2a">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231a3a2a'/><text y='.9em' font-size='72' x='50%' dominant-baseline='middle' text-anchor='middle'>🌿</text></svg>">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & ROOT ── */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+:root{
+  --cream:#faf7f2;--cream2:#f3ede3;--cream3:#ede5d8;--white:#ffffff;
+  --forest:#1a3a2a;--forest2:#2d5a3d;--sage:#4a7c59;--sage2:#6aaa7a;
+  --mint:#b8dfc5;--mint2:#d6f0e0;
+  --terra:#c9622f;--terra2:#e07845;
+  --gold:#d4a017;--gold2:#f0be3d;
+  --rose:#c94a4a;--sky:#3a7fa8;--sky2:#5ba3ce;
+  --text:#1a2a1e;--text2:#4a5e50;--text3:#7a9080;
+  --border:rgba(26,58,42,0.1);--border2:rgba(26,58,42,0.06);
+  --shadow:0 2px 20px rgba(26,58,42,0.08);
+  --shadow-lg:0 8px 40px rgba(26,58,42,0.14);
+  --radius:20px;--radius-sm:14px;--radius-xs:10px;
+
+  /* Desktop layout */
+  --desktop-max:480px;
+  --desktop-breakpoint:768px;
+}
+
+html{
+  height:100%;
+  /* iOS momentum scroll */
+  -webkit-overflow-scrolling:touch;
+}
+body{
+  min-height:100%;
+  font-family:'Manrope',sans-serif;
+  background:var(--cream);
+  color:var(--text);
+  overflow-x:hidden;
+}
+h1,h2,h3,h4,h5{font-family:'Sora',sans-serif;}
+input,select,textarea,button{font-family:'Manrope',sans-serif;font-size:16px;}
+button{cursor:pointer;min-height:44px;}
+input,select{-webkit-appearance:none;appearance:none;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--sage2);border-radius:4px;}
+
+/* ═══════════════════════════════════════════
+   DESKTOP SHELL — centers everything when >= 768px
+═══════════════════════════════════════════ */
+@media (min-width:768px){
+  body{
+    background:linear-gradient(135deg,#e8f5ec 0%,#f0f7f3 40%,#faf7f2 100%);
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:100vh;
+    padding:24px 16px 40px;
+  }
+
+  /* The phone frame wrapper */
+  #app-shell{
+    width:100%;
+    max-width:var(--desktop-max);
+    background:var(--cream);
+    border-radius:40px;
+    box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1),0 0 0 1px rgba(26,58,42,0.08);
+    overflow:hidden;
+    position:relative;
+    min-height:calc(100vh - 48px);
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* Auth also gets the frame */
+  #auth-page.active{
+    border-radius:40px;
+    max-width:var(--desktop-max);
+    min-height:calc(100vh - 48px);
+    margin:0 auto;
+    box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1);
+    overflow:hidden;
+  }
+
+  /* Desktop chrome decoration */
+  body::before{
+    content:'Picnic Manager';
+    position:fixed;top:0;left:0;right:0;
+    height:24px;background:var(--forest);
+    color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;
+    font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+    display:flex;align-items:center;justify-content:center;
+    z-index:9999;
+  }
+  body{padding-top:48px;}
+
+  #app-page{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    border-radius:40px;
+    overflow:hidden;
+  }
+
+  /* Bottom nav sits at bottom of frame */
+  .bottom-nav{
+    position:sticky !important;
+    bottom:0 !important;
+    border-radius:0 0 40px 40px;
+  }
+
+  /* Topbar rounded at top when in frame */
+  .topbar{border-radius:0 !important;}
+
+  /* Scrollable content area */
+  #app-page .tab-content.active{
+    flex:1;
+    overflow-y:auto;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE — full screen, app-like
+═══════════════════════════════════════════ */
+@media (max-width:767px){
+  #app-shell{width:100%;min-height:100vh;}
+
+  body{
+    /* Prevent address bar bounce on iOS */
+    position:fixed;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+  }
+
+  #app-page{
+    height:100%;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  #app-page .tab-content.active{
+    flex:1;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  #auth-page.active{
+    position:fixed;
+    inset:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  /* Safe area for bottom nav */
+  .bottom-nav{
+    padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* ═══════════════════════════════════════════
+   AUTH PAGE
+═══════════════════════════════════════════ */
+.page{display:none;}
+#auth-page.active{
+  display:flex;
+  background:linear-gradient(160deg,var(--cream) 0%,#e8f5ec 50%,#faf7f2 100%);
+  align-items:center;justify-content:center;padding:20px;
+  min-height:100vh;position:relative;overflow:hidden;
+}
+#auth-page.active::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 20% 20%,rgba(106,170,122,0.15) 0%,transparent 50%),
+             radial-gradient(ellipse at 80% 80%,rgba(201,98,47,0.08) 0%,transparent 50%);
+  pointer-events:none;
+}
+.blob1,.blob2,.blob3{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.4;pointer-events:none;}
+.blob1{width:300px;height:300px;background:var(--mint);top:-80px;right:-80px;}
+.blob2{width:200px;height:200px;background:rgba(212,160,23,0.3);bottom:40px;left:-60px;}
+.blob3{width:150px;height:150px;background:rgba(106,170,122,0.4);top:50%;left:60%;}
+
+.auth-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:28px;padding:36px 28px;width:100%;max-width:400px;
+  box-shadow:0 20px 60px rgba(26,58,42,0.12),0 2px 8px rgba(26,58,42,0.06);
+  position:relative;z-index:1;
+}
+.auth-logo{width:68px;height:68px;background:linear-gradient(135deg,var(--forest2),var(--sage));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px;box-shadow:0 8px 24px rgba(45,90,61,0.3);}
+.auth-title{font-size:26px;font-weight:800;text-align:center;margin-bottom:4px;color:var(--forest);}
+.auth-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:28px;font-weight:500;}
+.tab-row{display:flex;background:var(--cream2);border-radius:14px;padding:4px;gap:4px;margin-bottom:24px;border:1px solid var(--border);}
+.tab-btn{flex:1;padding:10px;border:none;border-radius:10px;font-weight:700;font-size:14px;background:transparent;color:var(--text3);transition:all 0.2s;font-family:'Sora',sans-serif;}
+.tab-btn.active{background:var(--white);color:var(--forest);box-shadow:var(--shadow);}
+.form-group{margin-bottom:14px;}
+.field-label{display:block;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.field-input{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);outline:none;transition:all 0.2s;font-family:'Manrope',sans-serif;}
+.field-input:focus{border-color:var(--sage);background:var(--white);box-shadow:0 0 0 3px rgba(106,170,122,0.15);}
+.field-input option{background:#fff;color:var(--text);}
+.primary-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--forest2),var(--sage));color:#fff;font-weight:700;font-size:15px;border:none;border-radius:14px;box-shadow:0 6px 20px rgba(45,90,61,0.3);transition:all 0.2s;font-family:'Sora',sans-serif;letter-spacing:0.3px;}
+.primary-btn:active{transform:scale(0.98);}
+.link-btn{background:none;border:none;color:var(--sage2);font-size:13px;font-weight:600;padding:8px 0;width:100%;cursor:pointer;}
+.alert{border-radius:12px;padding:14px 16px;font-size:13px;margin-bottom:16px;display:none;}
+.alert.show{display:block;}
+.alert-ok{background:rgba(106,170,122,0.12);border:1px solid rgba(106,170,122,0.3);color:var(--forest2);}
+.alert-err{background:rgba(201,98,47,0.08);border:1px solid rgba(201,98,47,0.2);color:var(--terra);}
+
+/* ═══════════════════════════════════════════
+   APP PAGE
+═══════════════════════════════════════════ */
+#app-page{display:none;background:var(--cream);}
+#app-page.active{display:flex;}
+
+.topbar{
+  background:rgba(255,255,255,0.95);border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  z-index:50;padding:12px 16px;flex-shrink:0;
+  /* iOS status bar spacing */
+  padding-top:max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;max-width:100%;}
+.topbar-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--forest2),var(--sage));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 3px 10px rgba(45,90,61,0.25);}
+.topbar-title{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;line-height:1.1;color:var(--forest);}
+.topbar-sub{font-size:11px;color:var(--text3);font-weight:500;}
+.btn-sm{padding:8px 14px;border:none;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;min-height:36px;font-family:'Manrope',sans-serif;}
+.btn-red{background:rgba(201,98,47,0.08);border:1px solid rgba(201,98,47,0.15);color:var(--terra);}
+.btn-green{background:linear-gradient(135deg,var(--forest2),var(--sage));color:#fff;box-shadow:0 4px 12px rgba(45,90,61,0.25);border:none;}
+.btn-teal{background:linear-gradient(135deg,var(--sage),var(--sage2));color:#fff;box-shadow:0 4px 12px rgba(74,124,89,0.3);border:none;}
+.btn-danger{background:linear-gradient(135deg,var(--rose),#e06060);color:#fff;border:none;box-shadow:0 4px 12px rgba(201,74,74,0.2);}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  flex-shrink:0;
+  background:rgba(255,255,255,0.97);border-top:1px solid var(--border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:flex;
+  padding:8px 0;
+  /* safe area handled per breakpoint above */
+}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;padding:6px 4px;transition:color 0.2s;cursor:pointer;font-family:'Manrope',sans-serif;}
+.nav-item.active{color:var(--forest2);}
+.nav-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:18px;transition:all 0.2s;}
+.nav-item.active .nav-icon{background:var(--mint2);}
+
+/* ── TAB CONTENT ── */
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.page-content{padding:16px;max-width:100%;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.card-sm{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;box-shadow:0 1px 8px rgba(26,58,42,0.06);}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.kpi-card{border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
+.kpi-val{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;line-height:1.1;}
+.kpi-lbl{font-size:11px;font-weight:600;opacity:0.65;margin-top:5px;text-transform:uppercase;letter-spacing:0.6px;}
+.kpi-icon{font-size:22px;margin-bottom:8px;}
+
+/* ── TRIP HEADER ── */
+.trip-header-card{
+  background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 60%,#3a7a50 100%);
+  border:none;border-radius:22px;padding:22px 20px;margin-bottom:14px;
+  box-shadow:0 8px 30px rgba(26,58,42,0.25);position:relative;overflow:hidden;
+}
+.trip-header-card::before{content:'🌿';font-size:80px;position:absolute;right:-10px;top:-15px;opacity:0.12;}
+
+.list-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;box-shadow:0 1px 8px rgba(26,58,42,0.06);transition:box-shadow 0.2s;}
+.list-item:hover{box-shadow:0 4px 16px rgba(26,58,42,0.1);}
+.avatar{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:18px;flex-shrink:0;}
+.section-title{font-family:'Sora',sans-serif;font-size:17px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--forest);}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.b-teal{background:var(--mint2);color:var(--forest2);}
+.b-amber{background:rgba(212,160,23,0.12);color:#8a6010;}
+.b-green{background:rgba(74,124,89,0.1);color:var(--sage);}
+.b-coral{background:rgba(201,98,47,0.1);color:var(--terra);}
+
+.bal-pos{background:linear-gradient(135deg,rgba(106,170,122,0.06),rgba(184,223,197,0.15));border:1.5px solid rgba(106,170,122,0.25);border-radius:18px;padding:18px;margin-bottom:10px;}
+.bal-neg{background:linear-gradient(135deg,rgba(201,98,47,0.05),rgba(224,120,69,0.08));border:1.5px solid rgba(201,98,47,0.2);border-radius:18px;padding:18px;margin-bottom:10px;}
+.bal-zero{background:var(--cream);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:10px;}
+
+.settle-card{background:var(--white);border:1.5px solid rgba(58,127,168,0.15);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(58,127,168,0.08);}
+.empty{text-align:center;padding:52px 20px;}
+.empty-icon{font-size:56px;margin-bottom:14px;opacity:0.4;}
+.empty-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--text3);font-weight:500;}
+
+/* ── SHEETS / MODALS ── */
+.sheet-overlay{display:none;position:fixed;inset:0;background:rgba(26,42,30,0.5);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+.sheet-overlay.open{display:flex;}
+@media(min-width:768px){
+  .sheet-overlay{align-items:center;}
+  .sheet{border-radius:28px !important;max-height:90vh;overflow-y:auto;}
+}
+.sheet{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px;width:100%;max-width:520px;padding-bottom:max(24px,env(safe-area-inset-bottom,24px));box-shadow:0 -8px 40px rgba(26,58,42,0.15);}
+.sheet-handle{width:40px;height:4px;background:var(--cream3);border-radius:4px;margin:0 auto 20px;}
+.sheet-title{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:20px;color:var(--forest);}
+.split-row{display:flex;gap:8px;}
+.split-opt{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--cream);color:var(--text3);font-weight:700;font-size:13px;transition:all 0.2s;cursor:pointer;font-family:'Manrope',sans-serif;}
+.split-opt.active{border-color:var(--sage);background:var(--mint2);color:var(--forest2);}
+
+.currency-row{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:0 1px 6px rgba(26,58,42,0.05);}
+.currency-row label{font-size:12px;color:var(--text3);font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:0.5px;}
+.currency-row select{flex:1;background:transparent;border:none;color:var(--text);font-size:14px;outline:none;font-family:'Manrope',sans-serif;font-weight:600;}
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:16px;}
+.chip-row::-webkit-scrollbar{display:none;}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--white);border:1.5px solid var(--border);border-radius:50px;padding:7px 14px;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;white-space:nowrap;box-shadow:0 1px 6px rgba(26,58,42,0.05);}
+.chip.active-chip{background:var(--mint2);border-color:var(--sage);color:var(--forest2);}
+.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.sum-cell{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:12px 10px;text-align:center;box-shadow:0 1px 6px rgba(26,58,42,0.05);}
+.sum-val{font-family:'Sora',sans-serif;font-weight:800;font-size:14px;color:var(--forest2);}
+.sum-lbl{font-size:10px;color:var(--text3);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;}
+.trip-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;cursor:pointer;box-shadow:var(--shadow);transition:all 0.2s;}
+.trip-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.trip-card.active-trip{background:var(--mint2);border-color:var(--sage);}
+.pdf-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,var(--forest2),var(--sage));color:#fff;border:none;border-radius:12px;font-weight:700;font-size:13px;box-shadow:0 4px 14px rgba(45,90,61,0.3);cursor:pointer;font-family:'Manrope',sans-serif;}
+.bal-stats{display:flex;gap:8px;margin-top:12px;}
+.bal-stat{flex:1;background:rgba(255,255,255,0.8);border-radius:10px;padding:8px 10px;text-align:center;border:1px solid var(--border);}
+.bal-stat-val{font-size:13px;font-weight:700;color:var(--forest);font-family:'Sora',sans-serif;}
+.bal-stat-lbl{font-size:10px;color:var(--text3);margin-top:2px;font-weight:600;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fade-up{animation:fadeUp 0.35s ease forwards;}
+.flex-row{display:flex;align-items:center;gap:12px;}
+.flex-between{display:flex;justify-content:space-between;align-items:center;}
+</style>
+</head>
+<body>
+
+<!-- AUTH PAGE (outside shell for full-screen) -->
+<div id="auth-page" class="page active">
+  <div class="blob1"></div><div class="blob2"></div><div class="blob3"></div>
+  <div class="auth-card">
+    <div class="auth-logo">🌿</div>
+    <h1 class="auth-title">Picnic Manager</h1>
+    <p class="auth-sub">Smart group expense tracking for trips</p>
+    <div class="tab-row" id="auth-tabs">
+      <button class="tab-btn active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
+    </div>
+    <div id="auth-alert" class="alert"></div>
+    <!-- LOGIN -->
+    <div id="form-login">
+      <div class="form-group"><label class="field-label">Username</label><input class="field-input" id="login-user" type="text" placeholder="your_username" autocomplete="username"></div>
+      <div class="form-group"><label class="field-label">Password</label><input class="field-input" id="login-pass" type="password" placeholder="••••••" autocomplete="current-password"></div>
+      <button class="primary-btn" onclick="doLogin()">Sign In →</button>
+      <button class="link-btn" style="margin-top:12px;" onclick="switchAuthTab('reset')">Forgot password?</button>
+    </div>
+    <!-- SIGNUP -->
+    <div id="form-signup" style="display:none;">
+      <div class="form-group"><label class="field-label">Full Name</label><input class="field-input" id="su-name" type="text" placeholder="John Smith" autocomplete="name"></div>
+      <div class="form-group"><label class="field-label">Email</label><input class="field-input" id="su-email" type="email" placeholder="john@email.com" autocomplete="email"></div>
+      <div class="form-group"><label class="field-label">Username (4+ chars)</label><input class="field-input" id="su-user" type="text" placeholder="john123" autocomplete="username"></div>
+      <div class="form-group"><label class="field-label">Security Question</label>
+        <select class="field-input" id="su-sq">
+          <option value="">Select question...</option>
+          <option>What is your mother's maiden name?</option>
+          <option>What was the name of your first pet?</option>
+          <option>What city were you born in?</option>
+          <option>What is your favorite color?</option>
+          <option>What was your childhood nickname?</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="field-label">Security Answer</label><input class="field-input" id="su-sa" type="text" placeholder="Your answer"></div>
+      <div class="form-group"><label class="field-label">Password (6+ chars)</label><input class="field-input" id="su-pass" type="password" placeholder="••••••" autocomplete="new-password"></div>
+      <div class="form-group"><label class="field-label">Confirm Password</label><input class="field-input" id="su-cpass" type="password" placeholder="••••••" autocomplete="new-password"></div>
+      <button class="primary-btn" onclick="doSignup()">Create Account →</button>
+    </div>
+    <!-- RESET -->
+    <div id="form-reset" style="display:none;">
+      <div style="background:rgba(58,127,168,0.07);border:1px solid rgba(58,127,168,0.2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--sky);font-weight:600;">🔑 Enter your username to recover your account</div>
+      <div class="form-group"><label class="field-label">Username</label><input class="field-input" id="rs-user" type="text" placeholder="your_username" oninput="loadResetQ()"></div>
+      <div id="rs-extra" style="display:none;">
+        <div class="form-group"><label class="field-label">Security Question</label><div class="field-input" id="rs-sq" style="color:var(--text2);min-height:48px;display:flex;align-items:center;font-size:14px;font-weight:500;"></div></div>
+        <div class="form-group"><label class="field-label">Your Answer</label><input class="field-input" id="rs-sa" type="text" placeholder="Your answer"></div>
+        <div class="form-group"><label class="field-label">New Password</label><input class="field-input" id="rs-pass" type="password" placeholder="••••••"></div>
+        <div class="form-group"><label class="field-label">Confirm New Password</label><input class="field-input" id="rs-cpass" type="password" placeholder="••••••"></div>
+      </div>
+      <button class="primary-btn" onclick="doReset()">Reset Password</button>
+      <button class="link-btn" style="margin-top:12px;" onclick="switchAuthTab('login')">← Back to Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP SHELL (phone frame on desktop) -->
+<div id="app-shell" style="display:none;">
+  <div id="app-page" class="page">
+    <div class="topbar">
+      <div class="topbar-inner">
+        <div class="flex-row">
+          <div class="topbar-logo">🌿</div>
+          <div>
+            <div class="topbar-title">Picnic Manager</div>
+            <div class="topbar-sub" id="topbar-hi">Welcome</div>
+          </div>
+        </div>
+        <div class="flex-row" style="gap:8px;">
+          <button class="pdf-btn" id="pdf-btn-top" onclick="generatePDF()" style="display:none;">📄 Report</button>
+          <button class="btn-sm btn-red" onclick="doLogout()">Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-home"     class="tab-content active"><div class="page-content fade-up" id="home-content"></div></div>
+    <div id="tab-people"   class="tab-content"><div class="page-content fade-up" id="people-content"></div></div>
+    <div id="tab-expenses" class="tab-content"><div class="page-content fade-up" id="expenses-content"></div></div>
+    <div id="tab-settle"   class="tab-content"><div class="page-content fade-up" id="settle-content"></div></div>
+    <div id="tab-trips"    class="tab-content"><div class="page-content fade-up" id="trips-content"></div></div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="switchTab('home')"     id="nav-home">    <div class="nav-icon">🏡</div><span>Home</span></button>
+      <button class="nav-item"        onclick="switchTab('people')"   id="nav-people">  <div class="nav-icon">👥</div><span>People</span></button>
+      <button class="nav-item"        onclick="switchTab('expenses')" id="nav-expenses"><div class="nav-icon">💰</div><span>Expenses</span></button>
+      <button class="nav-item"        onclick="switchTab('settle')"   id="nav-settle">  <div class="nav-icon">🤝</div><span>Settle</span></button>
+      <button class="nav-item"        onclick="switchTab('trips')"    id="nav-trips">   <div class="nav-icon">📚</div><span>Trips</span></button>
+    </nav>
+  </div>
+</div>
+
+<!-- SHEETS -->
+<div class="sheet-overlay" id="sheet-trip" onclick="closeSheet('sheet-trip')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">🌿 New Trip</div>
+    <div class="form-group"><label class="field-label">Trip Name</label><input class="field-input" id="new-trip-name" type="text" placeholder="Weekend Picnic"></div>
+    <div class="form-group"><label class="field-label">Date</label><input class="field-input" id="new-trip-date" type="date"></div>
+    <button class="primary-btn" onclick="createTrip()">Create Trip →</button>
+    <button class="link-btn" style="margin-top:10px;" onclick="closeSheet('sheet-trip')">Cancel</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-person" onclick="closeSheet('sheet-person')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Participant</div>
+    <div class="form-group"><label class="field-label">Family / Group Name</label><input class="field-input" id="new-part-name" type="text" placeholder="Smith Family"></div>
+    <div class="form-group"><label class="field-label">Number of Members</label><input class="field-input" id="new-part-members" type="number" min="1" value="1"></div>
+    <button class="primary-btn" onclick="addParticipant()">Add Participant →</button>
+    <button class="link-btn" style="margin-top:10px;" onclick="closeSheet('sheet-person')">Cancel</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-expense" onclick="closeSheet('sheet-expense')">
+  <div class="sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Expense</div>
+    <div class="form-group"><label class="field-label">Description</label><input class="field-input" id="new-exp-desc" type="text" placeholder="Food, transport, drinks..."></div>
+    <div class="form-group"><label class="field-label" id="exp-amt-label">Amount</label><input class="field-input" id="new-exp-amt" type="number" step="0.01" placeholder="0.00" inputmode="decimal"></div>
+    <div class="form-group"><label class="field-label">Paid By</label>
+      <select class="field-input" id="new-exp-paidby"><option value="">Select person...</option></select>
+    </div>
+    <div class="form-group"><label class="field-label">Split Method</label>
+      <div class="split-row">
+        <button class="split-opt active" id="split-head" onclick="setSplit('perHead')">Per Head 👤</button>
+        <button class="split-opt" id="split-fam" onclick="setSplit('perFamily')">Per Family 👨‍👩‍👦</button>
+      </div>
+    </div>
+    <button class="primary-btn" onclick="addExpense()">Add Expense →</button>
+    <button class="link-btn" style="margin-top:10px;" onclick="closeSheet('sheet-expense')">Cancel</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================ STATE */
+var currentUser=null,trips=[],currentTrip=null,splitType='perHead';
+var currencies=[
+  {code:'USD',symbol:'$',name:'US Dollar'},{code:'EUR',symbol:'€',name:'Euro'},
+  {code:'GBP',symbol:'£',name:'British Pound'},{code:'SAR',symbol:'SAR ',name:'Saudi Riyal'},
+  {code:'AED',symbol:'AED ',name:'UAE Dirham'},{code:'INR',symbol:'₹',name:'Indian Rupee'},
+  {code:'JPY',symbol:'¥',name:'Japanese Yen'},{code:'CNY',symbol:'¥',name:'Chinese Yuan'},
+  {code:'AUD',symbol:'A$',name:'Australian Dollar'},{code:'CAD',symbol:'C$',name:'Canadian Dollar'}
+];
+var currency=currencies[0];
+var avatarColors=[
+  ['#2d5a3d','#6aaa7a'],['#3a7fa8','#5ba3ce'],['#c9622f','#e07845'],
+  ['#8a6010','#d4a017'],['#c94a4a','#e06060'],['#4a5e80','#7090c0']
+];
+function getAC(name){return avatarColors[(name.charCodeAt(0)||0)%avatarColors.length];}
+function avStyle(name){var c=getAC(name);return 'background:linear-gradient(135deg,'+c[0]+','+c[1]+');color:#fff;';}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n){return currency.symbol+parseFloat(n||0).toFixed(2);}
+
+/* ============================================================ STORAGE */
+function sKey(){return 'picnicTrips_'+currentUser.username;}
+function cKey(){return 'picnicCurrency_'+currentUser.username;}
+function saveTrips(){localStorage.setItem(sKey(),JSON.stringify(trips));}
+function loadData(){
+  var sc=localStorage.getItem(cKey());
+  if(sc){for(var i=0;i<currencies.length;i++){if(currencies[i].code===sc){currency=currencies[i];break;}}}
+  var sd=localStorage.getItem(sKey());
+  if(sd){try{trips=JSON.parse(sd);}catch(e){trips=[];}
+    if(trips.length>0)currentTrip=trips[0];
+  }else{trips=[];currentTrip=null;}
+}
+
+/* ============================================================ AUTH */
+function showAlert(msg,type){var el=document.getElementById('auth-alert');el.textContent=msg;el.className='alert show '+(type==='ok'?'alert-ok':'alert-err');}
+function clearAlert(){document.getElementById('auth-alert').className='alert';}
+function switchAuthTab(tab){
+  clearAlert();
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-signup').style.display=tab==='signup'?'block':'none';
+  document.getElementById('form-reset').style.display=tab==='reset'?'block':'none';
+  var btns=document.querySelectorAll('#auth-tabs .tab-btn');
+  btns[0].className='tab-btn'+(tab==='login'?' active':'');
+  btns[1].className='tab-btn'+(tab==='signup'?' active':'');
+  document.getElementById('auth-tabs').style.display=tab==='reset'?'none':'flex';
+}
+function doLogin(){
+  clearAlert();var u=document.getElementById('login-user').value.trim();var p=document.getElementById('login-pass').value;
+  if(!u||!p){showAlert('Please enter username and password.');return;}
+  var users=JSON.parse(localStorage.getItem('picnicUsers')||'[]');
+  var found=null;for(var i=0;i<users.length;i++){if(users[i].username===u){found=users[i];break;}}
+  if(!found){showAlert('Username not found. Please sign up.');return;}
+  if(found.password!==p){showAlert('Incorrect password.');return;}
+  showAlert('Welcome back, '+found.fullName+'!','ok');
+  setTimeout(function(){localStorage.setItem('currentUser',JSON.stringify(found));startApp(found);},800);
+}
+function doSignup(){
+  clearAlert();
+  var name=document.getElementById('su-name').value.trim();
+  var email=document.getElementById('su-email').value.trim();
+  var user=document.getElementById('su-user').value.trim();
+  var sq=document.getElementById('su-sq').value;
+  var sa=document.getElementById('su-sa').value.trim();
+  var pass=document.getElementById('su-pass').value;
+  var cpass=document.getElementById('su-cpass').value;
+  if(!name||!email||!user||!pass||!cpass){showAlert('All fields are required.');return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showAlert('Invalid email address.');return;}
+  if(user.length<4){showAlert('Username must be 4+ characters.');return;}
+  if(pass.length<6){showAlert('Password must be 6+ characters.');return;}
+  if(pass!==cpass){showAlert('Passwords do not match.');return;}
+  if(!sq||sa.length<2){showAlert('Please complete security question.');return;}
+  var users=JSON.parse(localStorage.getItem('picnicUsers')||'[]');
+  for(var i=0;i<users.length;i++){
+    if(users[i].username===user){showAlert('Username already taken.');return;}
+    if(users[i].email===email){showAlert('Email already registered.');return;}
+  }
+  var nu={id:Date.now(),fullName:name,email:email,username:user,password:pass,securityQuestion:sq,securityAnswer:sa.toLowerCase(),createdAt:new Date().toISOString()};
+  users.push(nu);localStorage.setItem('picnicUsers',JSON.stringify(users));
+  showAlert('Account created! Redirecting to login...','ok');
+  setTimeout(function(){switchAuthTab('login');clearAlert();},2500);
+}
+function loadResetQ(){
+  var u=document.getElementById('rs-user').value.trim();
+  var users=JSON.parse(localStorage.getItem('picnicUsers')||'[]');
+  var found=null;for(var i=0;i<users.length;i++){if(users[i].username===u){found=users[i];break;}}
+  var extra=document.getElementById('rs-extra');
+  if(found){document.getElementById('rs-sq').textContent=found.securityQuestion;extra.style.display='block';}
+  else{extra.style.display='none';}
+}
+function doReset(){
+  clearAlert();var u=document.getElementById('rs-user').value.trim();var sa=document.getElementById('rs-sa').value.trim();
+  var pass=document.getElementById('rs-pass').value;var cpass=document.getElementById('rs-cpass').value;
+  if(!u){showAlert('Enter your username.');return;}
+  var users=JSON.parse(localStorage.getItem('picnicUsers')||'[]');
+  var idx=-1;for(var i=0;i<users.length;i++){if(users[i].username===u){idx=i;break;}}
+  if(idx===-1){showAlert('Username not found.');return;}
+  if(!sa){showAlert('Answer your security question.');return;}
+  if(!pass||!cpass){showAlert('Enter new password.');return;}
+  if(users[idx].securityAnswer!==sa.toLowerCase()){showAlert('Incorrect security answer.');return;}
+  if(pass.length<6){showAlert('Password must be 6+ characters.');return;}
+  if(pass!==cpass){showAlert('Passwords do not match.');return;}
+  users[idx].password=pass;localStorage.setItem('picnicUsers',JSON.stringify(users));
+  showAlert('Password reset! Redirecting...','ok');
+  setTimeout(function(){switchAuthTab('login');clearAlert();},2000);
+}
+
+/* ============================================================ APP INIT */
+function startApp(user){
+  currentUser=user;
+  document.getElementById('auth-page').classList.remove('active');
+  document.getElementById('auth-page').style.display='none';
+  document.getElementById('app-shell').style.display='block';
+  document.getElementById('app-page').classList.add('active');
+  document.getElementById('topbar-hi').textContent='Hi, '+user.fullName.split(' ')[0]+' 👋';
+  loadData();renderAll();switchTab('home');
+}
+function doLogout(){
+  if(!confirm('Logout?'))return;
+  localStorage.removeItem('currentUser');
+  currentUser=null;trips=[];currentTrip=null;currency=currencies[0];
+  document.getElementById('app-page').classList.remove('active');
+  document.getElementById('app-shell').style.display='none';
+  document.getElementById('auth-page').style.display='';
+  document.getElementById('auth-page').classList.add('active');
+  switchAuthTab('login');
+}
+window.addEventListener('load',function(){
+  var u=localStorage.getItem('currentUser');
+  if(u){try{startApp(JSON.parse(u));}catch(e){localStorage.removeItem('currentUser');}}
+});
+
+/* ============================================================ NAV */
+function switchTab(tab){
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.getElementById('nav-'+tab).classList.add('active');
+  // scroll tab content to top
+  var tc=document.getElementById('tab-'+tab);
+  if(tc)tc.scrollTop=0;
+  renderTab(tab);
+}
+function renderAll(){
+  ['home','people','expenses','settle','trips'].forEach(function(t){renderTab(t);});
+  updatePDFBtn();
+}
+function renderTab(tab){
+  if(tab==='home')renderHome();
+  else if(tab==='people')renderPeople();
+  else if(tab==='expenses')renderExpenses();
+  else if(tab==='settle')renderSettle();
+  else if(tab==='trips')renderTrips();
+}
+function updatePDFBtn(){
+  var p=currentTrip&&currentTrip.participants&&currentTrip.participants.length>0;
+  var e=currentTrip&&currentTrip.expenses&&currentTrip.expenses.length>0;
+  document.getElementById('pdf-btn-top').style.display=(p&&e)?'inline-flex':'none';
+}
+
+/* ============================================================ COMPUTED */
+function getParts(){return(currentTrip&&currentTrip.participants)||[];}
+function getExps(){return(currentTrip&&currentTrip.expenses)||[];}
+function totalExp(){return getExps().reduce(function(s,e){return s+e.amount;},0);}
+function totalHeads(){return getParts().reduce(function(s,p){return s+p.familyMembers;},0);}
+function cph(){var h=totalHeads();return h>0?totalExp()/h:0;}
+function cpf(){var f=getParts().length;return f>0?totalExp()/f:0;}
+function calcBal(){
+  var bal={};
+  getParts().forEach(function(p){bal[p.name]=0;});
+  getExps().forEach(function(exp){
+    var th=totalHeads(),tf=getParts().length;
+    var spu=exp.splitType==='perHead'&&th>0?exp.amount/th:(tf>0?exp.amount/tf:0);
+    getParts().forEach(function(p){
+      var sh=exp.splitType==='perHead'?spu*p.familyMembers:spu;
+      if(p.name===exp.paidBy)bal[p.name]+=exp.amount-sh;else bal[p.name]-=sh;
+    });
+  });
+  return bal;
+}
+function calcSettlements(){
+  if(!getParts().length||!getExps().length)return[];
+  var bal=calcBal(),settlements=[];
+  var debtors=[],creditors=[];
+  Object.keys(bal).forEach(function(k){
+    if(bal[k]<-0.001)debtors.push({name:k,amount:Math.abs(bal[k])});
+    else if(bal[k]>0.001)creditors.push({name:k,amount:bal[k]});
+  });
+  var d=debtors.map(function(x){return{name:x.name,amount:x.amount};});
+  var c=creditors.map(function(x){return{name:x.name,amount:x.amount};});
+  var di=0,ci=0;
+  while(di<d.length&&ci<c.length){
+    var pay=Math.min(d[di].amount,c[ci].amount);
+    if(pay>0.001)settlements.push({from:d[di].name,to:c[ci].name,amount:pay});
+    d[di].amount-=pay;c[ci].amount-=pay;
+    if(d[di].amount<0.001)di++;
+    if(c[ci].amount<0.001)ci++;
+  }
+  return settlements;
+}
+
+/* ============================================================ RENDER: HOME */
+function renderHome(){
+  var el=document.getElementById('home-content');
+  var parts=getParts(),exps=getExps();
+  if(!currentTrip){
+    el.innerHTML='<div class="empty"><div class="empty-icon">🌿</div><div class="empty-title">No trips yet</div><div class="empty-sub">Create your first group trip</div><br><button class="primary-btn" style="max-width:220px;margin:16px auto 0;display:block;" onclick="openSheet(\'sheet-trip\')">+ Create Trip</button></div>';
+    return;
+  }
+  var hasPDF=parts.length>0&&exps.length>0;
+  var html='';
+  html+='<div class="trip-header-card">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
+  html+='<div>';
+  html+='<div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">Active Trip</div>';
+  html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:22px;color:#fff;line-height:1.2;">'+esc(currentTrip.name)+'</div>';
+  html+='<div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:6px;font-weight:500;">📅 '+new Date(currentTrip.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})+'</div>';
+  html+='</div>';
+  if(hasPDF)html+='<button class="pdf-btn" onclick="generatePDF()" style="flex-shrink:0;">📄 PDF</button>';
+  html+='</div></div>';
+  html+='<div class="kpi-grid">';
+  html+='<div class="kpi-card" style="background:linear-gradient(135deg,#e8f5ec,#d6f0e0);"><div class="kpi-icon">👥</div><div class="kpi-val" style="color:#1a3a2a;">'+parts.length+'</div><div class="kpi-lbl" style="color:#4a7c59;">Families</div></div>';
+  html+='<div class="kpi-card" style="background:linear-gradient(135deg,#e8f0fb,#d5e6f7);"><div class="kpi-icon">👨‍👩‍👦</div><div class="kpi-val" style="color:#1a2a4a;">'+totalHeads()+'</div><div class="kpi-lbl" style="color:#3a7fa8;">Total Heads</div></div>';
+  html+='<div class="kpi-card" style="background:linear-gradient(135deg,#fdf3e8,#fce8d0);"><div class="kpi-icon">💰</div><div class="kpi-val" style="color:#5a2a0a;">'+fmt(totalExp())+'</div><div class="kpi-lbl" style="color:#c9622f;">Total Spent</div></div>';
+  html+='<div class="kpi-card" style="background:linear-gradient(135deg,#f5eafd,#e8d5f5);"><div class="kpi-icon">💲</div><div class="kpi-val" style="color:#3a1a5a;">'+fmt(cph())+'</div><div class="kpi-lbl" style="color:#8a4fc0;">Per Head</div></div>';
+  html+='</div>';
+  html+='<div class="currency-row"><label>Currency</label><select onchange="changeCurrency(this.value)">';
+  currencies.forEach(function(c2){html+='<option value="'+c2.code+'"'+(c2.code===currency.code?' selected':'')+'>'+esc(c2.symbol)+' '+esc(c2.name)+'</option>';});
+  html+='</select><span style="color:var(--text3);font-size:18px;">🌐</span></div>';
+  if(exps.length>0){
+    html+='<div class="section-title" style="margin-top:6px;">⚡ Recent Expenses</div>';
+    var recent=[].concat(exps).reverse().slice(0,3);
+    recent.forEach(function(exp){
+      html+='<div class="list-item" style="display:flex;align-items:center;gap:12px;">';
+      html+='<div class="avatar" style="'+avStyle(exp.paidBy)+'">'+esc(exp.paidBy.charAt(0))+'</div>';
+      html+='<div style="flex:1;min-width:0;">';
+      html+='<div style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);">'+esc(exp.description)+'</div>';
+      html+='<div style="font-size:12px;color:var(--text3);margin-top:3px;font-weight:500;">Paid by '+esc(exp.paidBy)+' &nbsp;<span class="badge '+(exp.splitType==='perHead'?'b-teal':'b-amber')+'">'+(exp.splitType==='perHead'?'Per Head':'Per Family')+'</span></div>';
+      html+='</div>';
+      html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:var(--forest2);flex-shrink:0;">'+fmt(exp.amount)+'</div>';
+      html+='</div>';
+    });
+    if(exps.length>3)html+='<div style="text-align:center;font-size:12px;color:var(--text3);margin-top:8px;font-weight:600;">+'+(exps.length-3)+' more — see Expenses tab</div>';
+  }
+  if(trips.length>1){
+    html+='<div class="section-title" style="margin-top:18px;">📚 Switch Trip</div>';
+    html+='<div class="chip-row">';
+    trips.forEach(function(t){html+='<div class="chip'+(t.id===currentTrip.id?' active-chip':'')+'" onclick="switchTrip('+t.id+')">🌿 '+esc(t.name)+'</div>';});
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================================ RENDER: PEOPLE */
+function renderPeople(){
+  var el=document.getElementById('people-content');var parts=getParts();
+  if(!currentTrip){el.innerHTML='<div class="empty"><div class="empty-icon">👥</div><div class="empty-title">No active trip</div><div class="empty-sub">Create a trip first</div></div>';return;}
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div class="section-title" style="margin-bottom:0;">👥 Participants</div><button class="btn-sm btn-teal" onclick="openSheet(\'sheet-person\')">+ Add</button></div>';
+  if(parts.length===0){
+    html+='<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">No participants yet</div><div class="empty-sub">Add families or groups to split expenses</div></div>';
+  }else{
+    var cpHead=cph();
+    parts.forEach(function(p){
+      var paid=getExps().filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
+      html+='<div class="list-item" style="display:flex;align-items:center;gap:14px;">';
+      html+='<div class="avatar" style="'+avStyle(p.name)+'width:48px;height:48px;font-size:20px;">'+esc(p.name.charAt(0))+'</div>';
+      html+='<div style="flex:1;min-width:0;">';
+      html+='<div style="font-weight:700;font-size:16px;color:var(--forest);">'+esc(p.name)+'</div>';
+      html+='<div style="font-size:12px;color:var(--text3);margin-top:2px;font-weight:500;">'+p.familyMembers+' member'+(p.familyMembers>1?'s':'')+' · Paid: <strong style="color:var(--forest2);">'+fmt(paid)+'</strong></div>';
+      if(cpHead>0)html+='<div style="font-size:12px;color:var(--sage);margin-top:2px;font-weight:600;">Share: '+fmt(cpHead*p.familyMembers)+'</div>';
+      html+='</div>';
+      html+='<button class="btn-sm btn-danger" onclick="removeParticipant('+p.id+')" style="padding:6px 12px;font-size:13px;min-height:34px;">✕</button>';
+      html+='</div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================================ RENDER: EXPENSES */
+function renderExpenses(){
+  var el=document.getElementById('expenses-content');var parts=getParts(),exps=getExps();
+  if(!currentTrip){el.innerHTML='<div class="empty"><div class="empty-icon">💰</div><div class="empty-title">No active trip</div></div>';return;}
+  var canAdd=parts.length>0;
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+  html+='<div class="section-title" style="margin-bottom:0;">💰 Expenses</div>';
+  html+='<button class="btn-sm" style="background:'+(canAdd?'linear-gradient(135deg,var(--forest2),var(--sage))':'var(--cream2)')+';color:'+(canAdd?'#fff':'var(--text3)')+';border:none;border-radius:10px;" onclick="'+(canAdd?'openExpSheet()':'alert(\'Add participants first\')')+'">+ Add</button>';
+  html+='</div>';
+  if(!canAdd){
+    html+='<div class="empty"><div class="empty-icon">👥</div><div class="empty-title">Add participants first</div><div class="empty-sub">You need participants to log expenses</div></div>';
+  }else if(exps.length===0){
+    html+='<div class="empty"><div class="empty-icon">🧾</div><div class="empty-title">No expenses yet</div><div class="empty-sub">Tap + Add to log your first expense</div></div>';
+  }else{
+    html+='<div class="summary-strip">';
+    html+='<div class="sum-cell"><div class="sum-val">'+fmt(totalExp())+'</div><div class="sum-lbl">Total</div></div>';
+    html+='<div class="sum-cell"><div class="sum-val">'+fmt(cph())+'</div><div class="sum-lbl">Per Head</div></div>';
+    html+='<div class="sum-cell"><div class="sum-val">'+fmt(cpf())+'</div><div class="sum-lbl">Per Family</div></div>';
+    html+='</div>';
+    var revExps=[].concat(exps).reverse();
+    revExps.forEach(function(exp){
+      html+='<div class="list-item"><div style="display:flex;align-items:center;gap:12px;">';
+      html+='<div class="avatar" style="'+avStyle(exp.paidBy)+';font-size:14px;width:40px;height:40px;">'+esc(exp.paidBy.charAt(0))+'</div>';
+      html+='<div style="flex:1;min-width:0;">';
+      html+='<div style="font-weight:700;font-size:15px;color:var(--text);">'+esc(exp.description)+'</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;">';
+      html+='<span style="font-size:12px;color:var(--text3);font-weight:500;">by '+esc(exp.paidBy)+'</span>';
+      html+='<span class="badge '+(exp.splitType==='perHead'?'b-teal':'b-amber')+'">'+(exp.splitType==='perHead'?'Per Head':'Per Family')+'</span>';
+      html+='<span style="font-size:11px;color:var(--text3);font-weight:500;">'+new Date(exp.date).toLocaleDateString()+'</span>';
+      html+='</div></div>';
+      html+='<div style="text-align:right;flex-shrink:0;">';
+      html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:17px;color:var(--forest2);">'+fmt(exp.amount)+'</div>';
+      html+='<button onclick="removeExpense('+exp.id+')" style="background:none;border:none;color:var(--terra);font-size:11px;font-weight:700;padding:2px 0;cursor:pointer;">Delete</button>';
+      html+='</div></div></div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================================ RENDER: SETTLE */
+function renderSettle(){
+  var el=document.getElementById('settle-content');var parts=getParts(),exps=getExps();
+  if(!currentTrip||parts.length===0||exps.length===0){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📊</div><div class="empty-title">Nothing to settle yet</div><div class="empty-sub">Add participants and expenses first</div></div>';return;
+  }
+  var bal=calcBal(),settlements=calcSettlements(),cpHead=cph();
+  var html='<div class="section-title">📊 Balances</div>';
+  parts.forEach(function(p){
+    var b=bal[p.name]||0;
+    var paid=exps.filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
+    var share=cpHead*p.familyMembers;
+    var isPos=b>0.001,isNeg=b<-0.001;
+    var cls=isPos?'bal-pos':isNeg?'bal-neg':'bal-zero';
+    var bCol=isPos?'var(--sage)':isNeg?'var(--terra)':'var(--text3)';
+    var bLbl=isPos?'to receive':isNeg?'to pay':'settled ✓';
+    html+='<div class="'+cls+'"><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">';
+    html+='<div class="avatar" style="'+avStyle(p.name)+'">'+esc(p.name.charAt(0))+'</div>';
+    html+='<div style="flex:1;"><div style="font-weight:700;font-size:16px;color:var(--forest);">'+esc(p.name)+'</div><div style="font-size:12px;color:var(--text3);font-weight:500;">'+p.familyMembers+' member'+(p.familyMembers>1?'s':'')+'</div></div>';
+    html+='<div style="text-align:right;"><div style="font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:'+bCol+';">'+fmt(Math.abs(b))+'</div><div style="font-size:11px;color:'+bCol+';font-weight:700;">'+bLbl+'</div></div>';
+    html+='</div><div class="bal-stats">';
+    html+='<div class="bal-stat"><div class="bal-stat-val">'+fmt(paid)+'</div><div class="bal-stat-lbl">Paid</div></div>';
+    html+='<div class="bal-stat"><div class="bal-stat-val">'+fmt(share)+'</div><div class="bal-stat-lbl">Their Share</div></div>';
+    html+='<div class="bal-stat"><div class="bal-stat-val" style="color:'+bCol+';">'+fmt(Math.abs(b))+'</div><div class="bal-stat-lbl">'+(isPos?'Owed To':(isNeg?'Owes':'Settled'))+'</div></div>';
+    html+='</div></div>';
+  });
+  html+='<div class="section-title" style="margin-top:22px;">💸 Transactions to Settle</div>';
+  if(settlements.length===0){
+    html+='<div style="background:linear-gradient(135deg,rgba(106,170,122,0.08),rgba(184,223,197,0.15));border:1.5px solid rgba(106,170,122,0.25);border-radius:20px;padding:36px;text-align:center;">';
+    html+='<div style="font-size:52px;margin-bottom:12px;">✅</div>';
+    html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:20px;color:var(--forest2);">All Settled!</div>';
+    html+='<div style="font-size:13px;color:var(--text3);margin-top:6px;font-weight:500;">No payments needed</div></div>';
+  }else{
+    settlements.forEach(function(s,i){
+      html+='<div class="settle-card">';
+      html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">';
+      html+='<div style="background:var(--cream2);color:var(--text2);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;border:1px solid var(--border);">'+(i+1)+'</div>';
+      html+='<div style="background:linear-gradient(135deg,var(--forest2),var(--sage));color:#fff;border-radius:50px;padding:7px 18px;font-family:Sora,sans-serif;font-weight:800;font-size:16px;box-shadow:0 4px 14px rgba(45,90,61,0.25);">'+fmt(s.amount)+'</div>';
+      html+='</div>';
+      html+='<div style="display:flex;align-items:center;gap:10px;">';
+      html+='<div style="flex:1;background:rgba(201,98,47,0.06);border:1.5px solid rgba(201,98,47,0.15);border-radius:14px;padding:12px;">';
+      html+='<div style="font-size:10px;color:var(--terra);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">PAYS</div>';
+      html+='<div style="font-weight:700;font-size:15px;color:var(--text);">'+esc(s.from)+'</div></div>';
+      html+='<div style="font-size:22px;color:var(--text3);">→</div>';
+      html+='<div style="flex:1;background:rgba(106,170,122,0.06);border:1.5px solid rgba(106,170,122,0.2);border-radius:14px;padding:12px;">';
+      html+='<div style="font-size:10px;color:var(--sage);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">RECEIVES</div>';
+      html+='<div style="font-weight:700;font-size:15px;color:var(--text);">'+esc(s.to)+'</div></div>';
+      html+='</div></div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================================ RENDER: TRIPS */
+function renderTrips(){
+  var el=document.getElementById('trips-content');
+  var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div class="section-title" style="margin-bottom:0;">📚 All Trips</div><button class="btn-sm btn-teal" onclick="openSheet(\'sheet-trip\')">+ New</button></div>';
+  if(trips.length===0){
+    html+='<div class="empty"><div class="empty-icon">🌿</div><div class="empty-title">No trips yet</div><div class="empty-sub">Create your first trip!</div></div>';
+  }else{
+    trips.forEach(function(t){
+      var tt=(t.expenses||[]).reduce(function(s,e){return s+e.amount;},0);
+      var tp=(t.participants||[]).length;
+      var isActive=currentTrip&&t.id===currentTrip.id;
+      html+='<div class="trip-card'+(isActive?' active-trip':'')+'" onclick="switchTrip('+t.id+')">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
+      html+='<div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;color:var(--forest);">'+esc(t.name)+'</div>';
+      html+='<div style="font-size:12px;color:var(--text3);font-weight:500;">📅 '+new Date(t.date).toLocaleDateString()+'</div></div>';
+      html+='<button onclick="event.stopPropagation();deleteTrip('+t.id+')" class="btn-sm" style="background:rgba(201,98,47,0.07);border:1px solid rgba(201,98,47,0.15);color:var(--terra);padding:5px 10px;font-size:12px;min-height:30px;">Delete</button>';
+      html+='</div>';
+      html+='<div style="display:flex;gap:8px;flex-wrap:wrap;">';
+      html+='<span class="badge b-teal">👥 '+tp+' families</span>';
+      html+='<span class="badge b-green">💰 '+currency.symbol+tt.toFixed(2)+'</span>';
+      if(isActive)html+='<span class="badge b-amber">✓ Active</span>';
+      html+='</div></div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+/* ============================================================ ACTIONS */
+function changeCurrency(code){
+  for(var i=0;i<currencies.length;i++){if(currencies[i].code===code){currency=currencies[i];break;}}
+  localStorage.setItem(cKey(),code);renderAll();
+}
+function createTrip(){
+  var name=document.getElementById('new-trip-name').value.trim();
+  var date=document.getElementById('new-trip-date').value;
+  if(!name||!date){alert('Please enter trip name and date.');return;}
+  var nt={id:Date.now(),name:name,date:date,participants:[],expenses:[],createdAt:new Date().toISOString()};
+  trips.unshift(nt);currentTrip=nt;
+  saveTrips();closeSheet('sheet-trip');
+  document.getElementById('new-trip-name').value='';document.getElementById('new-trip-date').value='';
+  renderAll();switchTab('home');
+}
+function switchTrip(id){
+  for(var i=0;i<trips.length;i++){if(trips[i].id===id){currentTrip=trips[i];break;}}
+  renderAll();switchTab('home');
+}
+function deleteTrip(id){
+  if(!confirm('Delete this trip?'))return;
+  trips=trips.filter(function(t){return t.id!==id;});
+  if(currentTrip&&currentTrip.id===id){currentTrip=trips.length>0?trips[0]:null;}
+  saveTrips();renderAll();
+}
+function addParticipant(){
+  var name=document.getElementById('new-part-name').value.trim();
+  var members=parseInt(document.getElementById('new-part-members').value)||1;
+  if(!name){alert('Please enter a name.');return;}
+  if(!currentTrip)return;
+  currentTrip.participants.push({id:Date.now(),name:name,familyMembers:members});
+  saveTrips();closeSheet('sheet-person');
+  document.getElementById('new-part-name').value='';document.getElementById('new-part-members').value='1';
+  renderAll();
+}
+function removeParticipant(id){
+  if(!currentTrip)return;
+  currentTrip.participants=currentTrip.participants.filter(function(p){return p.id!==id;});
+  saveTrips();renderAll();
+}
+function openExpSheet(){
+  var sel=document.getElementById('new-exp-paidby');
+  sel.innerHTML='<option value="">Select person...</option>';
+  getParts().forEach(function(p){var opt=document.createElement('option');opt.value=p.name;opt.textContent=p.name;sel.appendChild(opt);});
+  document.getElementById('exp-amt-label').textContent='Amount ('+currency.symbol+')';
+  openSheet('sheet-expense');
+}
+function setSplit(type){
+  splitType=type;
+  document.getElementById('split-head').className='split-opt'+(type==='perHead'?' active':'');
+  document.getElementById('split-fam').className='split-opt'+(type==='perFamily'?' active':'');
+}
+function addExpense(){
+  var desc=document.getElementById('new-exp-desc').value.trim();
+  var amt=parseFloat(document.getElementById('new-exp-amt').value);
+  var paidBy=document.getElementById('new-exp-paidby').value;
+  if(!desc||!amt||!paidBy){alert('Please fill in all fields.');return;}
+  if(!currentTrip)return;
+  currentTrip.expenses.push({id:Date.now(),description:desc,amount:amt,paidBy:paidBy,splitType:splitType,date:new Date().toISOString()});
+  saveTrips();closeSheet('sheet-expense');
+  document.getElementById('new-exp-desc').value='';document.getElementById('new-exp-amt').value='';
+  document.getElementById('new-exp-paidby').value='';setSplit('perHead');renderAll();
+}
+function removeExpense(id){
+  if(!currentTrip)return;
+  currentTrip.expenses=currentTrip.expenses.filter(function(e){return e.id!==id;});
+  saveTrips();renderAll();
+}
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+
+/* ============================================================ PDF — Clean A4 Report */
+function generatePDF(){
+  if(typeof window.jspdf==='undefined'){alert('PDF library loading, please try again.');return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  // ── Page dimensions & margins ──────────────────────────────
+  var W=210, H=297, ML=14, MR=14, MT=14, MB=14;
+  var CW=W-ML-MR;
+  var y=MT;
+
+  // ── Data ───────────────────────────────────────────────────
+  var parts=getParts(), exps=getExps();
+  var settlements=calcSettlements(), bal=calcBal();
+  var cpHead=cph(), totExp=totalExp(), totHds=totalHeads();
+  var totalSettled=settlements.reduce(function(s,t){return s+t.amount;},0);
+  var tripDate=new Date(currentTrip.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  var genDate=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+
+  // ── Colors ─────────────────────────────────────────────────
+  var GREEN=[26,90,55],   GREEN_L=[210,240,225];
+  var DARK=[30,40,35],    GRAY=[100,110,105],   LGRAY=[220,225,222];
+  var RED=[180,50,40],    RED_L=[250,235,232];
+  var BLUE=[40,90,160],   BLUE_L=[232,240,252];
+  var WHITE=[255,255,255];
+
+  // ── Helpers ────────────────────────────────────────────────
+  function sf(col){doc.setFillColor(col[0],col[1],col[2]);}
+  function st(col){doc.setTextColor(col[0],col[1],col[2]);}
+  function sd(col){doc.setDrawColor(col[0],col[1],col[2]);}
+  function rule(ry,col){sd(col||LGRAY);doc.setLineWidth(0.25);doc.line(ML,ry,ML+CW,ry);}
+
+  function newPageIfNeeded(need){
+    if(y+need>H-MB-8){
+      // Footer on current page
+      drawFooter();
+      doc.addPage();
+      y=MT;
+      drawHeader(false);
+    }
+  }
+
+  // ── Section heading ────────────────────────────────────────
+  function sectionHead(title){
+    newPageIfNeeded(10);
+    y+=3;
+    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text(title.toUpperCase(),ML,y);
+    y+=1.5;
+    sd(GREEN);doc.setLineWidth(0.4);doc.line(ML,y,ML+CW,y);
+    y+=4;
+  }
+
+  // ── Table header row ───────────────────────────────────────
+  function tableHead(cols){
+    // cols = [{label,x,w,align}]
+    sf(DARK);doc.rect(ML,y,CW,6,'F');
+    st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
+    cols.forEach(function(c){
+      doc.text(c.label,c.x+(c.align==='right'?c.w:0),y+4.3,{align:c.align||'left',maxWidth:c.w});
+    });
+    y+=6;
+  }
+
+  // ── Table data row ─────────────────────────────────────────
+  function tableRow(cols,i){
+    var rh=6.5;
+    newPageIfNeeded(rh);
+    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,rh,'F');}
+    st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    cols.forEach(function(c){
+      if(c.color)st(c.color);else st(DARK);
+      doc.setFont('helvetica',c.bold?'bold':'normal');
+      doc.text(String(c.val||''),c.x+(c.align==='right'?c.w:0),y+4.5,{align:c.align||'left',maxWidth:c.w});
+    });
+    y+=rh;
+  }
+
+  // ── Page header (repeated on page 2+) ──────────────────────
+  function drawHeader(isCover){
+    if(isCover){
+      // Full cover header bar
+      sf(GREEN);doc.rect(0,0,W,22,'F');
+      st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(15);
+      doc.text(currentTrip.name,ML,13);
+      doc.setFont('helvetica','normal');doc.setFontSize(8);
+      doc.text('Picnic Trip Manager  |  Settlement Report  |  '+tripDate,ML,19);
+      st([200,230,215]);doc.setFontSize(7);
+      doc.text('Generated: '+genDate,W-MR,19,{align:'right'});
+      y=28;
+    } else {
+      // Slim continuation header
+      sf(GREEN);doc.rect(0,0,W,8,'F');
+      st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
+      doc.text(currentTrip.name+' — Settlement Report (continued)',ML,5.5);
+      doc.text('Page '+doc.internal.getCurrentPageInfo().pageNumber,W-MR,5.5,{align:'right'});
+      y=14;
+    }
+  }
+
+  // ── Page footer ────────────────────────────────────────────
+  function drawFooter(){
+    var fy=H-7;
+    sd(LGRAY);doc.setLineWidth(0.25);doc.line(ML,fy-2,ML+CW,fy-2);
+    st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(7);
+    doc.text('Picnic Trip Manager',ML,fy);
+    doc.text(currentTrip.name+' · '+tripDate,W/2,fy,{align:'center'});
+    doc.text('Page '+doc.internal.getCurrentPageInfo().pageNumber,W-MR,fy,{align:'right'});
+  }
+
+  // ═══════════════════════════════════════════════════
+  //  COVER HEADER
+  // ═══════════════════════════════════════════════════
+  drawHeader(true);
+
+  // ── Summary KPI boxes (4 in a row) ─────────────────────────
+  var kw=(CW-6)/4, kh=16, kg=2;
+  var kpis=[
+    {l:'Families',   v:parts.length},
+    {l:'Total Heads',v:totHds},
+    {l:'Total Spent',v:fmt(totExp)},
+    {l:'Cost / Head', v:fmt(cpHead)},
+  ];
+  kpis.forEach(function(k,i){
+    var kx=ML+i*(kw+kg);
+    sf(GREEN_L);doc.roundedRect(kx,y,kw,kh,1.5,1.5,'F');
+    sd(GREEN);doc.setLineWidth(0.3);doc.roundedRect(kx,y,kw,kh,1.5,1.5,'S');
+    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(10);
+    doc.text(String(k.v),kx+kw/2,y+8,{align:'center'});
+    st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
+    doc.text(k.l,kx+kw/2,y+13,{align:'center'});
+  });
+  y+=kh+6;
+
+  // ── Trip details line ───────────────────────────────────────
+  st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+  doc.text('Trip Date: '+tripDate+'   |   Expenses: '+exps.length+'   |   Currency: '+currency.code+'   |   Per Family: '+fmt(cpf()),ML,y);
+  y+=6;
+
+  // ═══════════════════════════════════════════════════
+  //  SECTION 1: PARTICIPANTS & BALANCES
+  // ═══════════════════════════════════════════════════
+  sectionHead('1. Participants & Balances');
+
+  var c1=ML, c2=ML+46, c3=ML+70, c4=ML+94, c5=ML+118, c6=ML+CW;
+  tableHead([
+    {label:'Participant',x:c1,w:44,align:'left'},
+    {label:'Members',   x:c2,w:22,align:'left'},
+    {label:'Paid',      x:c3,w:22,align:'left'},
+    {label:'Fair Share',x:c4,w:22,align:'left'},
+    {label:'Balance',   x:c5,w:CW-(c5-ML),align:'right'},
+  ]);
+
+  parts.forEach(function(p,i){
+    var b=bal[p.name]||0;
+    var paid=exps.filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
+    var share=cpHead*p.familyMembers;
+    var isPos=b>0.001, isNeg=b<-0.001;
+    var bStr=(isPos?'+ ':isNeg?'- ':'')+fmt(Math.abs(b));
+    var bCol=isPos?GREEN:isNeg?RED:GRAY;
+    newPageIfNeeded(6.5);
+    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,6.5,'F');}
+    st(DARK);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text(p.name.length>18?p.name.substring(0,16)+'..':p.name,c1,y+4.5);
+    doc.setFont('helvetica','normal');
+    doc.text(String(p.familyMembers)+(p.familyMembers>1?' pax':' pax'),c2,y+4.5);
+    doc.text(fmt(paid),c3,y+4.5);
+    doc.text(fmt(share),c4,y+4.5);
+    st(bCol);doc.setFont('helvetica','bold');
+    doc.text(bStr,c6,y+4.5,{align:'right'});
+    y+=6.5;
+  });
+  // Totals row
+  sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
+  st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('TOTAL',c1,y+5);
+  doc.text(fmt(totExp),c3,y+5);
+  doc.text(fmt(totExp),c4,y+5);
+  doc.text('—',c6,y+5,{align:'right'});
+  y+=11;
+
+  // ═══════════════════════════════════════════════════
+  //  SECTION 2: EXPENSE BREAKDOWN
+  // ═══════════════════════════════════════════════════
+  sectionHead('2. Expense Breakdown');
+
+  var e1=ML, e2=ML+62, e3=ML+100, e4=ML+122, e5=ML+CW;
+  tableHead([
+    {label:'Description', x:e1,w:60, align:'left'},
+    {label:'Paid By',     x:e2,w:36, align:'left'},
+    {label:'Split',       x:e3,w:20, align:'left'},
+    {label:'Date',        x:e4,w:20, align:'left'},
+    {label:'Amount',      x:e5,w:CW-(e5-ML),align:'right'},
+  ]);
+
+  exps.forEach(function(exp,i){
+    newPageIfNeeded(6.5);
+    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,6.5,'F');}
+    var desc=exp.description.length>30?exp.description.substring(0,28)+'..':exp.description;
+    var pBy=exp.paidBy.length>18?exp.paidBy.substring(0,16)+'..':exp.paidBy;
+    var expDate=new Date(exp.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+    st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
+    doc.text(desc,e1,y+4.5);
+    doc.text(pBy,e2,y+4.5);
+    st(exp.splitType==='perHead'?GREEN:GRAY);
+    doc.text(exp.splitType==='perHead'?'Per Head':'Per Fam.',e3,y+4.5);
+    st(GRAY);doc.text(expDate,e4,y+4.5);
+    st(DARK);doc.setFont('helvetica','bold');
+    doc.text(fmt(exp.amount),e5,y+4.5,{align:'right'});
+    y+=6.5;
+  });
+  // Grand total
+  sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
+  st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
+  doc.text('GRAND TOTAL',e1,y+5);
+  doc.text('Per Head: '+fmt(cpHead)+'  |  Per Family: '+fmt(cpf()),e2,y+5);
+  doc.text(fmt(totExp),e5,y+5,{align:'right'});
+  y+=11;
+
+  // ═══════════════════════════════════════════════════
+  //  SECTION 3: SETTLEMENT TRANSACTIONS
+  // ═══════════════════════════════════════════════════
+  sectionHead('3. Settlement Transactions');
+
+  if(settlements.length===0){
+    newPageIfNeeded(14);
+    sf(GREEN_L);doc.roundedRect(ML,y,CW,12,1.5,1.5,'F');
+    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text('All Settled — No transactions required',W/2,y+7.5,{align:'center'});
+    y+=16;
+  } else {
+    var s1=ML, s2=ML+8, s3=ML+70, s4=ML+80, s5=ML+CW;
+    tableHead([
+      {label:'#',       x:s1,w:7,  align:'left'},
+      {label:'Pays',    x:s2,w:60, align:'left'},
+      {label:'',        x:s3,w:8,  align:'left'},
+      {label:'Receives',x:s4,w:80, align:'left'},
+      {label:'Amount',  x:s5,w:CW-(s5-ML),align:'right'},
+    ]);
+
+    settlements.forEach(function(s,i){
+      newPageIfNeeded(7);
+      if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,7,'F');}
+      // index
+      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(8);
+      doc.text(String(i+1),s1,y+5);
+      // payer
+      sf(RED_L);doc.roundedRect(s2,y+0.8,58,5.5,1,1,'F');
+      st(RED);doc.setFont('helvetica','bold');doc.setFontSize(8);
+      var payer=s.from.length>20?s.from.substring(0,18)+'..':s.from;
+      doc.text(payer,s2+29,y+5,{align:'center'});
+      // arrow
+      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(9);
+      doc.text('→',s3+1,y+5);
+      // receiver
+      sf(GREEN_L);doc.roundedRect(s4,y+0.8,58,5.5,1,1,'F');
+      st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
+      var recv=s.to.length>20?s.to.substring(0,18)+'..':s.to;
+      doc.text(recv,s4+29,y+5,{align:'center'});
+      // amount
+      st(DARK);doc.text(fmt(s.amount),s5,y+5,{align:'right'});
+      y+=7;
+    });
+
+    // Summary total
+    y+=2;
+    sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
+    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
+    doc.text('TOTAL TO TRANSFER',s1,y+5);
+    doc.text(fmt(totalSettled),s5,y+5,{align:'right'});
+    y+=11;
+  }
+
+  // ── Footer on last page ─────────────────────────────────────
+  drawFooter();
+
+  doc.save(currentTrip.name.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'_report.pdf');
+}
+</script>
+</body>
+</html>
