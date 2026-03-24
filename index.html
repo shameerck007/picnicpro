@@ -27,7 +27,6 @@
   --shadow-lg:0 8px 40px rgba(26,58,42,0.14);
   --radius:20px;--radius-sm:14px;--radius-xs:10px;
   --desktop-max:480px;
-  /* Bottom nav height — used to offset sheet so nav stays visible */
   --nav-h:64px;
 }
 html{height:100%;-webkit-overflow-scrolling:touch;}
@@ -39,157 +38,41 @@ input,select{-webkit-appearance:none;appearance:none;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:var(--sage2);border-radius:4px;}
 
-/* ═══════════════════════════════════════════
-   DESKTOP SHELL
-═══════════════════════════════════════════ */
 @media (min-width:768px){
-  body{
-    background:linear-gradient(135deg,#e8f5ec 0%,#f0f7f3 40%,#faf7f2 100%);
-    display:flex;align-items:flex-start;justify-content:center;
-    min-height:100vh;padding:24px 16px 40px;
-  }
-  #app-shell{
-    width:100%;max-width:var(--desktop-max);
-    background:var(--cream);border-radius:40px;
-    box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1),0 0 0 1px rgba(26,58,42,0.08);
-    overflow:hidden;position:relative;
-    min-height:calc(100vh - 48px);
-    display:flex;flex-direction:column;
-  }
-  #auth-page.active{
-    border-radius:40px;max-width:var(--desktop-max);
-    min-height:calc(100vh - 48px);margin:0 auto;
-    box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1);
-    overflow:hidden;
-  }
-  body::before{
-    content:'Picnic Manager';position:fixed;top:0;left:0;right:0;height:24px;
-    background:var(--forest);color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;
-    font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-    display:flex;align-items:center;justify-content:center;z-index:9999;
-  }
+  body{background:linear-gradient(135deg,#e8f5ec 0%,#f0f7f3 40%,#faf7f2 100%);display:flex;align-items:flex-start;justify-content:center;min-height:100vh;padding:24px 16px 40px;}
+  #app-shell{width:100%;max-width:var(--desktop-max);background:var(--cream);border-radius:40px;box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1),0 0 0 1px rgba(26,58,42,0.08);overflow:hidden;position:relative;min-height:calc(100vh - 48px);display:flex;flex-direction:column;}
+  #auth-page.active{border-radius:40px;max-width:var(--desktop-max);min-height:calc(100vh - 48px);margin:0 auto;box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1);overflow:hidden;}
+  body::before{content:'Picnic Manager';position:fixed;top:0;left:0;right:0;height:24px;background:var(--forest);color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;z-index:9999;}
   body{padding-top:48px;}
   #app-page{flex:1;display:flex !important;flex-direction:column;border-radius:40px;overflow:hidden;}
   .bottom-nav{position:sticky !important;bottom:0 !important;border-radius:0 0 40px 40px;}
   .topbar{border-radius:0 !important;}
-  /* On desktop the tab content scrolls inside the shell */
   #app-page .tab-content.active{flex:1;overflow-y:auto;min-height:0;}
-
-  /* Desktop: sheet overlays centered, don't need nav offset */
   .sheet-overlay{align-items:center;}
   .sheet{border-radius:28px !important;max-height:90vh;overflow-y:auto;}
 }
 
-/* ═══════════════════════════════════════════
-   MOBILE — fixed shell approach
-   The app-shell takes the fixed viewport role.
-   body stays normal so iOS scroll never breaks.
-═══════════════════════════════════════════ */
 @media (max-width:767px){
-  body{
-    position:static;
-    width:100%;
-    height:auto;
-    overflow:auto;
-  }
-
-  /* Auth: full screen fixed, scrolls independently */
-  #auth-page.active{
-    position:fixed !important;
-    inset:0 !important;
-    overflow-y:auto !important;
-    -webkit-overflow-scrolling:touch !important;
-    display:block !important;
-    padding:20px !important;
-    padding-top:max(24px, env(safe-area-inset-top, 0px)) !important;
-    padding-bottom:max(32px, env(safe-area-inset-bottom, 0px)) !important;
-    z-index:10;
-  }
-  #auth-page.active .auth-card{
-    margin:12px auto;
-  }
-
-  /* Shell: fixed full-screen container */
-  #app-shell{
-    position:fixed !important;
-    top:0 !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    width:100% !important;
-    height:100% !important;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  /* App page fills shell, column flex */
-  #app-page{
-    flex:1;
-    min-height:0;
-    display:flex !important;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  /* Topbar never shrinks */
+  body{position:static;width:100%;height:auto;overflow:auto;}
+  #auth-page.active{position:fixed !important;inset:0 !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch !important;display:block !important;padding:20px !important;padding-top:max(24px, env(safe-area-inset-top, 0px)) !important;padding-bottom:max(32px, env(safe-area-inset-bottom, 0px)) !important;z-index:10;}
+  #auth-page.active .auth-card{margin:12px auto;}
+  #app-shell{position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;width:100% !important;height:100% !important;display:flex;flex-direction:column;overflow:hidden;}
+  #app-page{flex:1;min-height:0;display:flex !important;flex-direction:column;overflow:hidden;}
   .topbar{flex-shrink:0 !important;}
-
-  /* Tab content: takes remaining space and scrolls */
-  #app-page .tab-content.active{
-    flex:1 !important;
-    min-height:0 !important;
-    overflow-y:auto !important;
-    -webkit-overflow-scrolling:touch !important;
-    overscroll-behavior-y:contain;
-  }
-
-  /* Nav: never shrinks, always at bottom */
-  .bottom-nav{
-    flex-shrink:0 !important;
-    padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
-  }
-
-  /* Sheet: sits above content but BELOW nav (nav z-index:300 wins) */
-  .sheet-overlay{
-    bottom:var(--nav-h) !important;
-  }
-  .sheet{
-    padding-bottom:16px !important;
-    border-radius:28px 28px 0 0 !important;
-    max-height:calc(100svh - var(--nav-h) - 20px);
-    overflow-y:auto;
-  }
+  #app-page .tab-content.active{flex:1 !important;min-height:0 !important;overflow-y:auto !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain;}
+  .bottom-nav{flex-shrink:0 !important;padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));}
+  .sheet-overlay{bottom:var(--nav-h) !important;}
+  .sheet{padding-bottom:16px !important;border-radius:28px 28px 0 0 !important;max-height:calc(100svh - var(--nav-h) - 20px);overflow-y:auto;}
 }
 
-/* ═══════════════════════════════════════════
-   AUTH PAGE
-═══════════════════════════════════════════ */
 .page{display:none;}
-#auth-page.active{
-  display:flex;
-  background:linear-gradient(160deg,var(--cream) 0%,#e8f5ec 50%,#faf7f2 100%);
-  align-items:center;justify-content:center;
-  padding:20px;min-height:100vh;
-  position:relative;overflow:hidden;
-}
-#auth-page.active::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 20% 20%,rgba(106,170,122,0.15) 0%,transparent 50%),
-             radial-gradient(ellipse at 80% 80%,rgba(201,98,47,0.08) 0%,transparent 50%);
-  pointer-events:none;
-}
+#auth-page.active{display:flex;background:linear-gradient(160deg,var(--cream) 0%,#e8f5ec 50%,#faf7f2 100%);align-items:center;justify-content:center;padding:20px;min-height:100vh;position:relative;overflow:hidden;}
+#auth-page.active::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(106,170,122,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(201,98,47,0.08) 0%,transparent 50%);pointer-events:none;}
 .blob1,.blob2,.blob3{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.4;pointer-events:none;}
 .blob1{width:300px;height:300px;background:var(--mint);top:-80px;right:-80px;}
 .blob2{width:200px;height:200px;background:rgba(212,160,23,0.3);bottom:40px;left:-60px;}
 .blob3{width:150px;height:150px;background:rgba(106,170,122,0.4);top:50%;left:60%;}
-
-.auth-card{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:28px;padding:36px 28px;width:100%;max-width:400px;
-  box-shadow:0 20px 60px rgba(26,58,42,0.12),0 2px 8px rgba(26,58,42,0.06);
-  position:relative;z-index:1;
-}
+.auth-card{background:var(--white);border:1px solid var(--border);border-radius:28px;padding:36px 28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(26,58,42,0.12),0 2px 8px rgba(26,58,42,0.06);position:relative;z-index:1;}
 .auth-logo{width:68px;height:68px;background:linear-gradient(135deg,var(--forest2),var(--sage));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 18px;box-shadow:0 8px 24px rgba(45,90,61,0.3);}
 .auth-title{font-size:26px;font-weight:800;text-align:center;margin-bottom:4px;color:var(--forest);}
 .auth-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:28px;font-weight:500;}
@@ -209,18 +92,9 @@ input,select{-webkit-appearance:none;appearance:none;}
 .alert-ok{background:rgba(106,170,122,0.12);border:1px solid rgba(106,170,122,0.3);color:var(--forest2);}
 .alert-err{background:rgba(201,98,47,0.08);border:1px solid rgba(201,98,47,0.2);color:var(--terra);}
 
-/* ═══════════════════════════════════════════
-   APP PAGE
-═══════════════════════════════════════════ */
 #app-page{display:none;background:var(--cream);}
 #app-page.active{display:flex;flex-direction:column;}
-
-.topbar{
-  background:rgba(255,255,255,0.95);border-bottom:1px solid var(--border);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  z-index:50;padding:12px 16px;flex-shrink:0;
-  padding-top:max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
-}
+.topbar{background:rgba(255,255,255,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:50;padding:12px 16px;flex-shrink:0;padding-top:max(12px, calc(env(safe-area-inset-top, 0px) + 8px));}
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;max-width:100%;}
 .topbar-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--forest2),var(--sage));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 3px 10px rgba(45,90,61,0.25);}
 .topbar-title{font-family:'Sora',sans-serif;font-weight:800;font-size:16px;line-height:1.1;color:var(--forest);}
@@ -230,46 +104,23 @@ input,select{-webkit-appearance:none;appearance:none;}
 .btn-green{background:linear-gradient(135deg,var(--forest2),var(--sage));color:#fff;box-shadow:0 4px 12px rgba(45,90,61,0.25);border:none;}
 .btn-teal{background:linear-gradient(135deg,var(--sage),var(--sage2));color:#fff;box-shadow:0 4px 12px rgba(74,124,89,0.3);border:none;}
 .btn-danger{background:linear-gradient(135deg,var(--rose),#e06060);color:#fff;border:none;box-shadow:0 4px 12px rgba(201,74,74,0.2);}
-
-/* ── BOTTOM NAV ──
-   Always visible, always on top of sheets on mobile */
-.bottom-nav{
-  flex-shrink:0;
-  background:rgba(255,255,255,0.97);border-top:1px solid var(--border);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  display:flex;padding:8px 0;
-  /* Ensure nav is always above sheet overlay */
-  position:relative;
-  z-index:300;
-}
+.bottom-nav{flex-shrink:0;background:rgba(255,255,255,0.97);border-top:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;padding:8px 0;position:relative;z-index:300;}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;padding:6px 4px;transition:color 0.2s;cursor:pointer;font-family:'Manrope',sans-serif;}
 .nav-item.active{color:var(--forest2);}
 .nav-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:18px;transition:all 0.2s;}
 .nav-item.active .nav-icon{background:var(--mint2);}
-
-/* ── TAB CONTENT ── */
 .tab-content{display:none;min-height:0;}
 .tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;}
 .page-content{padding:16px;max-width:100%;flex:1;}
-
-/* ── CARDS ── */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
 .card-sm{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;box-shadow:0 1px 8px rgba(26,58,42,0.06);}
-
-/* ── KPI ── */
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .kpi-card{border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.06);}
 .kpi-val{font-family:'Sora',sans-serif;font-weight:800;font-size:22px;line-height:1.1;}
 .kpi-lbl{font-size:11px;font-weight:600;opacity:0.65;margin-top:5px;text-transform:uppercase;letter-spacing:0.6px;}
 .kpi-icon{font-size:22px;margin-bottom:8px;}
-
-.trip-header-card{
-  background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 60%,#3a7a50 100%);
-  border:none;border-radius:22px;padding:22px 20px;margin-bottom:14px;
-  box-shadow:0 8px 30px rgba(26,58,42,0.25);position:relative;overflow:hidden;
-}
+.trip-header-card{background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 60%,#3a7a50 100%);border:none;border-radius:22px;padding:22px 20px;margin-bottom:14px;box-shadow:0 8px 30px rgba(26,58,42,0.25);position:relative;overflow:hidden;}
 .trip-header-card::before{content:'🌿';font-size:80px;position:absolute;right:-10px;top:-15px;opacity:0.12;}
-
 .list-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;margin-bottom:10px;box-shadow:0 1px 8px rgba(26,58,42,0.06);transition:box-shadow 0.2s;}
 .list-item:hover{box-shadow:0 4px 16px rgba(26,58,42,0.1);}
 .avatar{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif;font-weight:800;font-size:18px;flex-shrink:0;}
@@ -279,67 +130,24 @@ input,select{-webkit-appearance:none;appearance:none;}
 .b-amber{background:rgba(212,160,23,0.12);color:#8a6010;}
 .b-green{background:rgba(74,124,89,0.1);color:var(--sage);}
 .b-coral{background:rgba(201,98,47,0.1);color:var(--terra);}
-
 .bal-pos{background:linear-gradient(135deg,rgba(106,170,122,0.06),rgba(184,223,197,0.15));border:1.5px solid rgba(106,170,122,0.25);border-radius:18px;padding:18px;margin-bottom:10px;}
 .bal-neg{background:linear-gradient(135deg,rgba(201,98,47,0.05),rgba(224,120,69,0.08));border:1.5px solid rgba(201,98,47,0.2);border-radius:18px;padding:18px;margin-bottom:10px;}
 .bal-zero{background:var(--cream);border:1.5px solid var(--border);border-radius:18px;padding:18px;margin-bottom:10px;}
-
 .settle-card{background:var(--white);border:1.5px solid rgba(58,127,168,0.15);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(58,127,168,0.08);}
 .empty{text-align:center;padding:52px 20px;}
 .empty-icon{font-size:56px;margin-bottom:14px;opacity:0.4;}
 .empty-title{font-family:'Sora',sans-serif;font-size:18px;font-weight:700;color:var(--text2);margin-bottom:6px;}
 .empty-sub{font-size:13px;color:var(--text3);font-weight:500;}
-
-/* ═══════════════════════════════════════════
-   SHEET OVERLAY
-   KEY CHANGE: On mobile, we leave space for the bottom nav.
-   The nav has z-index:300, overlay has z-index:200 — nav wins.
-═══════════════════════════════════════════ */
-.sheet-overlay{
-  display:none;
-  position:fixed;
-  top:0;left:0;right:0;
-  /* Stop above the nav on mobile */
-  bottom:0;
-  background:rgba(26,42,30,0.5);
-  z-index:200;
-  align-items:flex-end;
-  justify-content:center;
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
-}
+.sheet-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(26,42,30,0.5);z-index:200;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 .sheet-overlay.open{display:flex;}
-
-@media(max-width:767px){
-  .sheet-overlay{
-    bottom:var(--nav-h) !important;
-  }
-  .sheet{
-    border-radius:28px 28px 0 0;
-    padding-bottom:16px !important;
-    max-height:calc(100vh - var(--nav-h) - 20px);
-    overflow-y:auto;
-  }
-}
-
-@media(min-width:768px){
-  .sheet-overlay{align-items:center;}
-  .sheet{border-radius:28px !important;max-height:90vh;overflow-y:auto;}
-}
-
-.sheet{
-  background:var(--white);
-  border-radius:28px 28px 0 0;
-  padding:24px 20px;
-  width:100%;max-width:520px;
-  box-shadow:0 -8px 40px rgba(26,58,42,0.15);
-}
+@media(max-width:767px){.sheet-overlay{bottom:var(--nav-h) !important;}.sheet{border-radius:28px 28px 0 0;padding-bottom:16px !important;max-height:calc(100vh - var(--nav-h) - 20px);overflow-y:auto;}}
+@media(min-width:768px){.sheet-overlay{align-items:center;}.sheet{border-radius:28px !important;max-height:90vh;overflow-y:auto;}}
+.sheet{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px;width:100%;max-width:520px;box-shadow:0 -8px 40px rgba(26,58,42,0.15);}
 .sheet-handle{width:40px;height:4px;background:var(--cream3);border-radius:4px;margin:0 auto 20px;}
 .sheet-title{font-family:'Sora',sans-serif;font-weight:800;font-size:20px;margin-bottom:20px;color:var(--forest);}
 .split-row{display:flex;gap:8px;}
 .split-opt{flex:1;padding:12px;border-radius:12px;border:2px solid var(--border);background:var(--cream);color:var(--text3);font-weight:700;font-size:13px;transition:all 0.2s;cursor:pointer;font-family:'Manrope',sans-serif;}
 .split-opt.active{border-color:var(--sage);background:var(--mint2);color:var(--forest2);}
-
 .currency-row{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:12px 16px;margin-bottom:14px;box-shadow:0 1px 6px rgba(26,58,42,0.05);}
 .currency-row label{font-size:12px;color:var(--text3);font-weight:700;flex-shrink:0;text-transform:uppercase;letter-spacing:0.5px;}
 .currency-row select{flex:1;background:transparent;border:none;color:var(--text);font-size:14px;outline:none;font-family:'Manrope',sans-serif;font-weight:600;}
@@ -379,16 +187,12 @@ input,select{-webkit-appearance:none;appearance:none;}
       <button class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
     </div>
     <div id="auth-alert" class="alert"></div>
-
-    <!-- LOGIN -->
     <div id="form-login">
       <div class="form-group"><label class="field-label">Username</label><input class="field-input" id="login-user" type="text" placeholder="your_username" autocomplete="username"></div>
       <div class="form-group"><label class="field-label">Password</label><input class="field-input" id="login-pass" type="password" placeholder="••••••" autocomplete="current-password"></div>
       <button class="primary-btn" onclick="doLogin()">Sign In →</button>
       <button class="link-btn" style="margin-top:12px;" onclick="switchAuthTab('reset')">Forgot password?</button>
     </div>
-
-    <!-- SIGNUP -->
     <div id="form-signup" style="display:none;">
       <div class="form-group"><label class="field-label">Full Name</label><input class="field-input" id="su-name" type="text" placeholder="John Smith" autocomplete="name"></div>
       <div class="form-group"><label class="field-label">Email</label><input class="field-input" id="su-email" type="email" placeholder="john@email.com" autocomplete="email"></div>
@@ -408,8 +212,6 @@ input,select{-webkit-appearance:none;appearance:none;}
       <div class="form-group"><label class="field-label">Confirm Password</label><input class="field-input" id="su-cpass" type="password" placeholder="••••••" autocomplete="new-password"></div>
       <button class="primary-btn" onclick="doSignup()">Create Account →</button>
     </div>
-
-    <!-- RESET -->
     <div id="form-reset" style="display:none;">
       <div style="background:rgba(58,127,168,0.07);border:1px solid rgba(58,127,168,0.2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--sky);font-weight:600;">🔑 Enter your username to recover your account</div>
       <div class="form-group"><label class="field-label">Username</label><input class="field-input" id="rs-user" type="text" placeholder="your_username" oninput="loadResetQ()"></div>
@@ -443,14 +245,11 @@ input,select{-webkit-appearance:none;appearance:none;}
         </div>
       </div>
     </div>
-
     <div id="tab-home"     class="tab-content active"><div class="page-content fade-up" id="home-content"></div></div>
     <div id="tab-people"   class="tab-content"><div class="page-content fade-up" id="people-content"></div></div>
     <div id="tab-expenses" class="tab-content"><div class="page-content fade-up" id="expenses-content"></div></div>
     <div id="tab-settle"   class="tab-content"><div class="page-content fade-up" id="settle-content"></div></div>
     <div id="tab-trips"    class="tab-content"><div class="page-content fade-up" id="trips-content"></div></div>
-
-    <!-- BOTTOM NAV — z-index:300 keeps it above sheet overlays (z-index:200) -->
     <nav class="bottom-nav">
       <button class="nav-item active" onclick="switchTab('home')"     id="nav-home">    <div class="nav-icon">🏡</div><span>Home</span></button>
       <button class="nav-item"        onclick="switchTab('people')"   id="nav-people">  <div class="nav-icon">👥</div><span>People</span></button>
@@ -472,7 +271,6 @@ input,select{-webkit-appearance:none;appearance:none;}
     <button class="link-btn" style="margin-top:10px;" onclick="closeSheet('sheet-trip')">Cancel</button>
   </div>
 </div>
-
 <div class="sheet-overlay" id="sheet-person" onclick="closeSheet('sheet-person')">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
@@ -483,7 +281,6 @@ input,select{-webkit-appearance:none;appearance:none;}
     <button class="link-btn" style="margin-top:10px;" onclick="closeSheet('sheet-person')">Cancel</button>
   </div>
 </div>
-
 <div class="sheet-overlay" id="sheet-expense" onclick="closeSheet('sheet-expense')">
   <div class="sheet" onclick="event.stopPropagation()">
     <div class="sheet-handle"></div>
@@ -564,12 +361,9 @@ function doLogin(){
 }
 function doSignup(){
   clearAlert();
-  var name=document.getElementById('su-name').value.trim();
-  var email=document.getElementById('su-email').value.trim();
-  var user=document.getElementById('su-user').value.trim();
-  var sq=document.getElementById('su-sq').value;
-  var sa=document.getElementById('su-sa').value.trim();
-  var pass=document.getElementById('su-pass').value;
+  var name=document.getElementById('su-name').value.trim();var email=document.getElementById('su-email').value.trim();
+  var user=document.getElementById('su-user').value.trim();var sq=document.getElementById('su-sq').value;
+  var sa=document.getElementById('su-sa').value.trim();var pass=document.getElementById('su-pass').value;
   var cpass=document.getElementById('su-cpass').value;
   if(!name||!email||!user||!pass||!cpass){showAlert('All fields are required.');return;}
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showAlert('Invalid email address.');return;}
@@ -635,29 +429,18 @@ function doLogout(){
 window.addEventListener('load',function(){
   var u=localStorage.getItem('currentUser');
   if(u){try{startApp(JSON.parse(u));}catch(e){localStorage.removeItem('currentUser');}}
-
-  /* Measure actual nav height and set --nav-h so the sheet stops exactly above it */
-  function setNavHeight(){
-    var nav=document.querySelector('.bottom-nav');
-    if(nav){
-      var h=nav.offsetHeight;
-      document.documentElement.style.setProperty('--nav-h', h+'px');
-    }
-  }
-  setNavHeight();
-  window.addEventListener('resize', setNavHeight);
+  function setNavHeight(){var nav=document.querySelector('.bottom-nav');if(nav){var h=nav.offsetHeight;document.documentElement.style.setProperty('--nav-h',h+'px');}}
+  setNavHeight();window.addEventListener('resize',setNavHeight);
 });
 
 /* ============================================================ NAV */
 function switchTab(tab){
-  /* Close any open sheet when switching tabs */
   document.querySelectorAll('.sheet-overlay.open').forEach(function(s){s.classList.remove('open');});
   document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active');});
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('nav-'+tab).classList.add('active');
-  var tc=document.getElementById('tab-'+tab);
-  if(tc)tc.scrollTop=0;
+  var tc=document.getElementById('tab-'+tab);if(tc)tc.scrollTop=0;
   renderTab(tab);
 }
 function renderAll(){
@@ -665,10 +448,8 @@ function renderAll(){
   updatePDFBtn();
 }
 function renderTab(tab){
-  if(tab==='home')renderHome();
-  else if(tab==='people')renderPeople();
-  else if(tab==='expenses')renderExpenses();
-  else if(tab==='settle')renderSettle();
+  if(tab==='home')renderHome();else if(tab==='people')renderPeople();
+  else if(tab==='expenses')renderExpenses();else if(tab==='settle')renderSettle();
   else if(tab==='trips')renderTrips();
 }
 function updatePDFBtn(){
@@ -712,8 +493,7 @@ function calcSettlements(){
     var pay=Math.min(d[di].amount,c[ci].amount);
     if(pay>0.001)settlements.push({from:d[di].name,to:c[ci].name,amount:pay});
     d[di].amount-=pay;c[ci].amount-=pay;
-    if(d[di].amount<0.001)di++;
-    if(c[ci].amount<0.001)ci++;
+    if(d[di].amount<0.001)di++;if(c[ci].amount<0.001)ci++;
   }
   return settlements;
 }
@@ -729,13 +509,10 @@ function renderHome(){
   var html='';
   html+='<div class="trip-header-card">';
   html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
-  html+='<div>';
-  html+='<div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">Active Trip</div>';
+  html+='<div><div style="font-size:10px;color:rgba(255,255,255,0.6);font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">Active Trip</div>';
   html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:22px;color:#fff;line-height:1.2;">'+esc(currentTrip.name)+'</div>';
   html+='<div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:6px;font-weight:500;">📅 '+new Date(currentTrip.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})+'</div>';
-  html+='</div>';
-
-  html+='</div></div>';
+  html+='</div></div></div>';
   html+='<div class="kpi-grid">';
   html+='<div class="kpi-card" style="background:linear-gradient(135deg,#e8f5ec,#d6f0e0);"><div class="kpi-icon">👥</div><div class="kpi-val" style="color:#1a3a2a;">'+parts.length+'</div><div class="kpi-lbl" style="color:#4a7c59;">Families</div></div>';
   html+='<div class="kpi-card" style="background:linear-gradient(135deg,#e8f0fb,#d5e6f7);"><div class="kpi-icon">👨‍👩‍👦</div><div class="kpi-val" style="color:#1a2a4a;">'+totalHeads()+'</div><div class="kpi-lbl" style="color:#3a7fa8;">Total Heads</div></div>';
@@ -751,12 +528,9 @@ function renderHome(){
     recent.forEach(function(exp){
       html+='<div class="list-item" style="display:flex;align-items:center;gap:12px;">';
       html+='<div class="avatar" style="'+avStyle(exp.paidBy)+'">'+esc(exp.paidBy.charAt(0))+'</div>';
-      html+='<div style="flex:1;min-width:0;">';
-      html+='<div style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);">'+esc(exp.description)+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);">'+esc(exp.description)+'</div>';
       html+='<div style="font-size:12px;color:var(--text3);margin-top:3px;font-weight:500;">Paid by '+esc(exp.paidBy)+' &nbsp;<span class="badge '+(exp.splitType==='perHead'?'b-teal':'b-amber')+'">'+(exp.splitType==='perHead'?'Per Head':'Per Family')+'</span></div>';
-      html+='</div>';
-      html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:var(--forest2);flex-shrink:0;">'+fmt(exp.amount)+'</div>';
-      html+='</div>';
+      html+='</div><div style="font-family:Sora,sans-serif;font-weight:800;font-size:16px;color:var(--forest2);flex-shrink:0;">'+fmt(exp.amount)+'</div></div>';
     });
     if(exps.length>3)html+='<div style="text-align:center;font-size:12px;color:var(--text3);margin-top:8px;font-weight:600;">+'+(exps.length-3)+' more — see Expenses tab</div>';
   }
@@ -782,8 +556,7 @@ function renderPeople(){
       var paid=getExps().filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
       html+='<div class="list-item" style="display:flex;align-items:center;gap:14px;">';
       html+='<div class="avatar" style="'+avStyle(p.name)+'width:48px;height:48px;font-size:20px;">'+esc(p.name.charAt(0))+'</div>';
-      html+='<div style="flex:1;min-width:0;">';
-      html+='<div style="font-weight:700;font-size:16px;color:var(--forest);">'+esc(p.name)+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:16px;color:var(--forest);">'+esc(p.name)+'</div>';
       html+='<div style="font-size:12px;color:var(--text3);margin-top:2px;font-weight:500;">'+p.familyMembers+' member'+(p.familyMembers>1?'s':'')+' · Paid: <strong style="color:var(--forest2);">'+fmt(paid)+'</strong></div>';
       if(cpHead>0)html+='<div style="font-size:12px;color:var(--sage);margin-top:2px;font-weight:600;">Share: '+fmt(cpHead*p.familyMembers)+'</div>';
       html+='</div>';
@@ -817,8 +590,7 @@ function renderExpenses(){
     revExps.forEach(function(exp){
       html+='<div class="list-item"><div style="display:flex;align-items:center;gap:12px;">';
       html+='<div class="avatar" style="'+avStyle(exp.paidBy)+';font-size:14px;width:40px;height:40px;">'+esc(exp.paidBy.charAt(0))+'</div>';
-      html+='<div style="flex:1;min-width:0;">';
-      html+='<div style="font-weight:700;font-size:15px;color:var(--text);">'+esc(exp.description)+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:15px;color:var(--text);">'+esc(exp.description)+'</div>';
       html+='<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;">';
       html+='<span style="font-size:12px;color:var(--text3);font-weight:500;">by '+esc(exp.paidBy)+'</span>';
       html+='<span class="badge '+(exp.splitType==='perHead'?'b-teal':'b-amber')+'">'+(exp.splitType==='perHead'?'Per Head':'Per Family')+'</span>';
@@ -984,169 +756,357 @@ function removeExpense(id){
 function openSheet(id){document.getElementById(id).classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 
-/* ============================================================ PDF */
+/* ============================================================ PDF — KPI DASHBOARD STYLE ============================================================ */
 function generatePDF(){
   if(typeof window.jspdf==='undefined'){alert('PDF library loading, please try again.');return;}
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  var W=210,H=297,ML=14,MR=14,MT=14,MB=14;
-  var CW=W-ML-MR;
-  var y=MT;
-  var parts=getParts(),exps=getExps();
-  var settlements=calcSettlements(),bal=calcBal();
-  var cpHead=cph(),totExp=totalExp(),totHds=totalHeads();
+
+  // ── Page geometry ──────────────────────────────────────────────────────────
+  var PW=210, PH=297;
+  var PAD=10;       // outer page padding
+  var CW=PW-PAD*2;  // content width = 190mm
+  var y=PAD;
+
+  // ── Data ──────────────────────────────────────────────────────────────────
+  var parts=getParts(), exps=getExps();
+  var bal=calcBal(), settlements=calcSettlements();
+  var totExp=totalExp(), totHds=totalHeads();
+  var cpHead=cph(), cpFam=cpf();
   var totalSettled=settlements.reduce(function(s,t){return s+t.amount;},0);
   var tripDate=new Date(currentTrip.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   var genDate=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-  var GREEN=[26,90,55],GREEN_L=[210,240,225],DARK=[30,40,35],GRAY=[100,110,105],LGRAY=[220,225,222];
-  var RED=[180,50,40],RED_L=[250,235,232],BLUE=[40,90,160],BLUE_L=[232,240,252],WHITE=[255,255,255];
-  function sf(col){doc.setFillColor(col[0],col[1],col[2]);}
-  function st(col){doc.setTextColor(col[0],col[1],col[2]);}
-  function sd(col){doc.setDrawColor(col[0],col[1],col[2]);}
-  function newPageIfNeeded(need){if(y+need>H-MB-8){drawFooter();doc.addPage();y=MT;drawHeader(false);}}
-  function sectionHead(title){
-    newPageIfNeeded(10);y+=3;
-    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
-    doc.text(title.toUpperCase(),ML,y);
-    y+=1.5;sd(GREEN);doc.setLineWidth(0.4);doc.line(ML,y,ML+CW,y);y+=4;
+
+  // ── Palette ────────────────────────────────────────────────────────────────
+  var C={
+    forestDark:[18,52,34],
+    forest:[26,90,55],
+    forestMid:[40,110,70],
+    sage:[74,124,89],
+    mint:[214,240,224],
+    mintLight:[237,250,243],
+    coral:[201,98,47],
+    coralLight:[252,238,232],
+    sky:[40,100,165],
+    skyLight:[232,242,255],
+    gold:[180,130,20],
+    goldLight:[255,247,224],
+    purple:[120,60,180],
+    purpleLight:[245,236,255],
+    white:[255,255,255],
+    nearBlack:[20,30,24],
+    dark:[50,65,58],
+    mid:[100,120,110],
+    light:[180,195,188],
+    pageBg:[248,251,249],
+    gridLine:[225,235,230]
+  };
+
+  function sf(c){doc.setFillColor(c[0],c[1],c[2]);}
+  function st(c){doc.setTextColor(c[0],c[1],c[2]);}
+  function sd(c){doc.setDrawColor(c[0],c[1],c[2]);}
+  function lw(w){doc.setLineWidth(w);}
+  function rect(x,r,w,h,fill,stroke){
+    if(fill){sf(fill);doc.rect(x,r,w,h,'F');}
+    if(stroke){sd(stroke);doc.rect(x,r,w,h,'S');}
   }
-  function tableHead(cols){
-    sf(DARK);doc.rect(ML,y,CW,6,'F');
-    st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-    cols.forEach(function(c){doc.text(c.label,c.x+(c.align==='right'?c.w:0),y+4.3,{align:c.align||'left',maxWidth:c.w});});
-    y+=6;
+  function rRect(x,r,w,h,rx,fill,stroke){
+    if(fill){sf(fill);doc.roundedRect(x,r,w,h,rx,rx,'F');}
+    if(stroke){sd(stroke);lw(0.3);doc.roundedRect(x,r,w,h,rx,rx,'S');}
   }
-  function tableRow(cols,i){
-    var rh=6.5;newPageIfNeeded(rh);
-    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,rh,'F');}
-    st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
-    cols.forEach(function(c){
-      if(c.color)st(c.color);else st(DARK);
-      doc.setFont('helvetica',c.bold?'bold':'normal');
-      doc.text(String(c.val||''),c.x+(c.align==='right'?c.w:0),y+4.5,{align:c.align||'left',maxWidth:c.w});
-    });
-    y+=rh;
-  }
-  function drawHeader(isCover){
-    if(isCover){
-      sf(GREEN);doc.rect(0,0,W,22,'F');
-      st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(15);
-      doc.text(currentTrip.name,ML,13);
-      doc.setFont('helvetica','normal');doc.setFontSize(8);
-      doc.text('Picnic Trip Manager  |  Settlement Report  |  '+tripDate,ML,19);
-      st([200,230,215]);doc.setFontSize(7);
-      doc.text('Generated: '+genDate,W-MR,19,{align:'right'});
-      y=28;
-    }else{
-      sf(GREEN);doc.rect(0,0,W,8,'F');
-      st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-      doc.text(currentTrip.name+' — Settlement Report (continued)',ML,5.5);
-      doc.text('Page '+doc.internal.getCurrentPageInfo().pageNumber,W-MR,5.5,{align:'right'});
-      y=14;
-    }
-  }
-  function drawFooter(){
-    var fy=H-7;
-    sd(LGRAY);doc.setLineWidth(0.25);doc.line(ML,fy-2,ML+CW,fy-2);
-    st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(7);
-    doc.text('Picnic Trip Manager',ML,fy);
-    doc.text(currentTrip.name+' · '+tripDate,W/2,fy,{align:'center'});
-    doc.text('Page '+doc.internal.getCurrentPageInfo().pageNumber,W-MR,fy,{align:'right'});
-  }
-  drawHeader(true);
-  var kw=(CW-6)/4,kh=16,kg=2;
-  var kpis=[{l:'Families',v:parts.length},{l:'Total Heads',v:totHds},{l:'Total Spent',v:fmt(totExp)},{l:'Cost / Head',v:fmt(cpHead)}];
+  function txt(text,x,r,opts){doc.text(String(text||''),x,r,opts||{});}
+
+  // ── Page background ────────────────────────────────────────────────────────
+  sf(C.pageBg); doc.rect(0,0,PW,PH,'F');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SECTION 1 — HEADER BANNER
+  // ═══════════════════════════════════════════════════════════════════════════
+  var HH=28;
+  // Deep green gradient band
+  sf(C.forestDark); doc.rect(0,0,PW,HH,'F');
+  // Subtle accent stripe
+  sf(C.forestMid); doc.rect(0,HH-2,PW,2,'F');
+
+  // Title
+  st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(16);
+  txt(currentTrip.name, PAD+2, 11);
+
+  // Sub-labels
+  doc.setFont('helvetica','normal'); doc.setFontSize(8);
+  st([160,200,175]);
+  txt('Trip Expense Report  •  '+tripDate, PAD+2, 18);
+  txt('Generated: '+genDate+'  |  Currency: '+currency.code+'  |  '+exps.length+' expenses', PAD+2, 23);
+
+  // Picnic badge top-right
+  sf(C.sage); doc.roundedRect(PW-PAD-22,3,22,14,3,3,'F');
+  st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+  txt('PICNIC', PW-PAD-11, 8.5, {align:'center'});
+  txt('MANAGER', PW-PAD-11, 14, {align:'center'});
+
+  y = HH + 5;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SECTION 2 — KPI ROW (4 cards)
+  // ═══════════════════════════════════════════════════════════════════════════
+  var KPIH=26, KPIG=3;
+  var KPIW=(CW - KPIG*3)/4;
+  var kpis=[
+    {label:'TOTAL SPENT',    value:fmt(totExp),   bg:C.mintLight,  accent:C.forest,   border:C.mint},
+    {label:'COST PER HEAD',  value:fmt(cpHead),   bg:C.skyLight,   accent:C.sky,      border:[200,225,255]},
+    {label:'COST PER FAMILY',value:fmt(cpFam),    bg:C.goldLight,  accent:C.gold,     border:[240,225,180]},
+    {label:'FAMILIES / HEADS',value:parts.length+' / '+totHds, bg:C.purpleLight, accent:C.purple, border:[220,200,245]}
+  ];
   kpis.forEach(function(k,i){
-    var kx=ML+i*(kw+kg);
-    sf(GREEN_L);doc.roundedRect(kx,y,kw,kh,1.5,1.5,'F');
-    sd(GREEN);doc.setLineWidth(0.3);doc.roundedRect(kx,y,kw,kh,1.5,1.5,'S');
-    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(10);
-    doc.text(String(k.v),kx+kw/2,y+8,{align:'center'});
-    st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(6.5);
-    doc.text(k.l,kx+kw/2,y+13,{align:'center'});
+    var kx=PAD + i*(KPIW+KPIG);
+    // Card bg
+    rRect(kx, y, KPIW, KPIH, 2, k.bg, k.border);
+    // Left accent bar
+    sf(k.accent); doc.rect(kx, y, 2.5, KPIH, 'F');
+    // Value
+    st(k.accent); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    txt(k.value, kx+KPIW/2+1.25, y+11, {align:'center'});
+    // Label
+    st(C.mid); doc.setFont('helvetica','normal'); doc.setFontSize(6.5);
+    txt(k.label, kx+KPIW/2+1.25, y+18.5, {align:'center'});
+    // Divider line at bottom
+    sd(k.border); lw(0.2); doc.line(kx+3,y+KPIH-3,kx+KPIW-3,y+KPIH-3);
   });
-  y+=kh+6;
-  st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
-  doc.text('Trip Date: '+tripDate+'   |   Expenses: '+exps.length+'   |   Currency: '+currency.code+'   |   Per Family: '+fmt(cpf()),ML,y);
-  y+=6;
-  sectionHead('1. Participants & Balances');
-  var c1=ML,c2=ML+46,c3=ML+70,c4=ML+94,c5=ML+118,c6=ML+CW;
-  tableHead([{label:'Participant',x:c1,w:44},{label:'Members',x:c2,w:22},{label:'Paid',x:c3,w:22},{label:'Fair Share',x:c4,w:22},{label:'Balance',x:c5,w:CW-(c5-ML),align:'right'}]);
+  y += KPIH + 5;
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SECTION 3 — TWO COLUMN LAYOUT  (Balances left | Settlements right)
+  // ═══════════════════════════════════════════════════════════════════════════
+  var colGap=4;
+  var COL1W=CW*0.55, COL2W=CW-COL1W-colGap;
+  var col1x=PAD, col2x=PAD+COL1W+colGap;
+
+  // ── Helper: section header ──────────────────────────────────────────────
+  function sectionLabel(label, x, r, w, accentColor){
+    sf(accentColor); doc.rect(x, r, w, 6.5, 'F');
+    st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    txt(label, x+4, r+4.5);
+    return r+6.5+2;
+  }
+
+  // ─────────────────────────────────────
+  // LEFT COLUMN: Participant Balances
+  // ─────────────────────────────────────
+  var ly = sectionLabel('PARTICIPANT BALANCES', col1x, y, COL1W, C.forest);
+
+  // Table header
+  var col1cols=[
+    {label:'NAME',   x:col1x+3,  w:COL1W*0.38},
+    {label:'MEM',    x:col1x+COL1W*0.41, w:COL1W*0.12, align:'center'},
+    {label:'PAID',   x:col1x+COL1W*0.55, w:COL1W*0.22, align:'right'},
+    {label:'BALANCE',x:col1x+COL1W*0.79, w:COL1W*0.18, align:'right'}
+  ];
+  sf(C.dark); doc.rect(col1x, ly, COL1W, 5.5, 'F');
+  st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+  col1cols.forEach(function(c){
+    var tx=c.align==='right'?c.x+c.w:(c.align==='center'?c.x+c.w/2:c.x);
+    txt(c.label, tx, ly+3.8, {align:c.align||'left'});
+  });
+  ly+=5.5;
+
   parts.forEach(function(p,i){
     var b=bal[p.name]||0;
     var paid=exps.filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
-    var share=cpHead*p.familyMembers;
-    var isPos=b>0.001,isNeg=b<-0.001;
-    var bStr=(isPos?'+ ':isNeg?'- ':'')+fmt(Math.abs(b));
-    var bCol=isPos?GREEN:isNeg?RED:GRAY;
-    newPageIfNeeded(6.5);
-    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,6.5,'F');}
-    st(DARK);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text(p.name.length>18?p.name.substring(0,16)+'..':p.name,c1,y+4.5);
-    doc.setFont('helvetica','normal');
-    doc.text(String(p.familyMembers)+(p.familyMembers>1?' pax':' pax'),c2,y+4.5);
-    doc.text(fmt(paid),c3,y+4.5);doc.text(fmt(share),c4,y+4.5);
-    st(bCol);doc.setFont('helvetica','bold');doc.text(bStr,c6,y+4.5,{align:'right'});
-    y+=6.5;
-  });
-  sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
-  st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-  doc.text('TOTAL',c1,y+5);doc.text(fmt(totExp),c3,y+5);doc.text(fmt(totExp),c4,y+5);doc.text('—',c6,y+5,{align:'right'});
-  y+=11;
-  sectionHead('2. Expense Breakdown');
-  var e1=ML,e2=ML+62,e3=ML+100,e4=ML+122,e5=ML+CW;
-  tableHead([{label:'Description',x:e1,w:60},{label:'Paid By',x:e2,w:36},{label:'Split',x:e3,w:20},{label:'Date',x:e4,w:20},{label:'Amount',x:e5,w:CW-(e5-ML),align:'right'}]);
-  exps.forEach(function(exp,i){
-    newPageIfNeeded(6.5);
-    if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,6.5,'F');}
-    var desc=exp.description.length>30?exp.description.substring(0,28)+'..':exp.description;
-    var pBy=exp.paidBy.length>18?exp.paidBy.substring(0,16)+'..':exp.paidBy;
-    var expDate=new Date(exp.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
-    st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
-    doc.text(desc,e1,y+4.5);doc.text(pBy,e2,y+4.5);
-    st(exp.splitType==='perHead'?GREEN:GRAY);doc.text(exp.splitType==='perHead'?'Per Head':'Per Fam.',e3,y+4.5);
-    st(GRAY);doc.text(expDate,e4,y+4.5);
-    st(DARK);doc.setFont('helvetica','bold');doc.text(fmt(exp.amount),e5,y+4.5,{align:'right'});
-    y+=6.5;
-  });
-  sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
-  st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-  doc.text('GRAND TOTAL',e1,y+5);
-  doc.text('Per Head: '+fmt(cpHead)+'  |  Per Family: '+fmt(cpf()),e2,y+5);
-  doc.text(fmt(totExp),e5,y+5,{align:'right'});
-  y+=11;
+    var isPos=b>0.001, isNeg=b<-0.001;
+    var rh=6;
+    // Row bg
+    if(i%2===0){sf(C.white); doc.rect(col1x,ly,COL1W,rh,'F');}
+    else{sf([242,248,245]); doc.rect(col1x,ly,COL1W,rh,'F');}
+    // Balance color indicator
+    var bColor=isPos?C.forest:isNeg?C.coral:C.mid;
+    sf(bColor); doc.rect(col1x,ly,2,rh,'F');
 
-  sectionHead('3. Settlement Transactions');
+    st(C.nearBlack); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    var nm=p.name.length>14?p.name.substring(0,13)+'..':p.name;
+    txt(nm, col1x+4, ly+4.1);
+
+    st(C.dark); doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    txt(String(p.familyMembers), col1x+COL1W*0.41+COL1W*0.06, ly+4.1, {align:'center'});
+    txt(fmt(paid), col1x+COL1W*0.55+COL1W*0.22, ly+4.1, {align:'right'});
+
+    var bStr=(isPos?'+':isNeg?'-':'')+fmt(Math.abs(b));
+    st(bColor); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    txt(bStr, col1x+COL1W, ly+4.1, {align:'right'});
+    ly+=rh;
+  });
+
+  // Totals row
+  sf(C.mint); doc.rect(col1x,ly,COL1W,6,'F');
+  st(C.forest); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+  txt('TOTAL', col1x+4, ly+4);
+  txt(fmt(totExp), col1x+COL1W*0.55+COL1W*0.22, ly+4, {align:'right'});
+  txt('—', col1x+COL1W, ly+4, {align:'right'});
+  ly+=6+3;
+
+  // ── Legend ────────────────────────────────────────────────
+  var legends=[{c:C.forest,l:'Owed (to receive)'},{c:C.coral,l:'Owes (to pay)'},{c:C.mid,l:'Settled'}];
+  legends.forEach(function(leg,i){
+    var lx=col1x+(i*(COL1W/3));
+    sf(leg.c); doc.rect(lx,ly,3,3,'F');
+    st(C.mid); doc.setFont('helvetica','normal'); doc.setFontSize(6);
+    txt(leg.l, lx+4.5, ly+2.5);
+  });
+  ly+=5;
+
+  // ─────────────────────────────────────
+  // RIGHT COLUMN: Settlement Transactions
+  // ─────────────────────────────────────
+  var ry = sectionLabel('SETTLEMENT TRANSACTIONS', col2x, y, COL2W, C.coral);
+
   if(settlements.length===0){
-    newPageIfNeeded(14);
-    sf(GREEN_L);doc.roundedRect(ML,y,CW,12,1.5,1.5,'F');
-    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
-    doc.text('All Settled — No transactions required',W/2,y+7.5,{align:'center'});
-    y+=16;
+    // All settled banner
+    rRect(col2x, ry, COL2W, 16, 3, C.mintLight, C.mint);
+    st(C.forest); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    txt('All Settled!', col2x+COL2W/2, ry+7, {align:'center'});
+    st(C.sage); doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    txt('No transactions required', col2x+COL2W/2, ry+12, {align:'center'});
+    ry+=16+3;
   }else{
-    var s1=ML,s2=ML+8,s3=ML+70,s4=ML+80,s5=ML+CW;
-    tableHead([{label:'#',x:s1,w:7},{label:'Pays',x:s2,w:60},{label:'',x:s3,w:8},{label:'Receives',x:s4,w:80},{label:'Amount',x:s5,w:CW-(s5-ML),align:'right'}]);
+    // Summary pill
+    sf(C.coralLight); doc.roundedRect(col2x, ry, COL2W, 7, 1.5, 1.5, 'F');
+    st(C.coral); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    txt(settlements.length+' payment'+(settlements.length>1?'s':'')+' needed  |  Total: '+fmt(totalSettled), col2x+COL2W/2, ry+4.5, {align:'center'});
+    ry+=7+3;
+
     settlements.forEach(function(s,i){
-      newPageIfNeeded(7);
-      if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,7,'F');}
-      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(String(i+1),s1,y+5);
-      sf(RED_L);doc.roundedRect(s2,y+0.8,58,5.5,1,1,'F');
-      st(RED);doc.setFont('helvetica','bold');doc.setFontSize(8);
-      doc.text(s.from.length>20?s.from.substring(0,18)+'..':s.from,s2+29,y+5,{align:'center'});
-      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text('→',s3+1,y+5);
-      sf(GREEN_L);doc.roundedRect(s4,y+0.8,58,5.5,1,1,'F');
-      st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-      doc.text(s.to.length>20?s.to.substring(0,18)+'..':s.to,s4+29,y+5,{align:'center'});
-      st(DARK);doc.text(fmt(s.amount),s5,y+5,{align:'right'});
-      y+=7;
+      var sh=14;
+      rRect(col2x, ry, COL2W, sh, 2, C.white, C.gridLine);
+
+      // Step number circle
+      sf(C.dark); doc.circle(col2x+6, ry+7, 3.5, 'F');
+      st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+      txt(String(i+1), col2x+6, ry+8.8, {align:'center'});
+
+      // Amount badge (top-right)
+      sf(C.forest); doc.roundedRect(col2x+COL2W-24, ry+2, 22, 8, 1.5, 1.5, 'F');
+      st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+      txt(fmt(s.amount), col2x+COL2W-13, ry+7.2, {align:'center'});
+
+      // PAYS block
+      sf(C.coralLight); doc.roundedRect(col2x+11, ry+1.5, (COL2W-40)/2, 11, 1.5, 1.5, 'F');
+      st(C.coral); doc.setFont('helvetica','bold'); doc.setFontSize(5.5);
+      txt('PAYS', col2x+11+((COL2W-40)/4), ry+5.5, {align:'center'});
+      st(C.nearBlack); doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+      var fn=s.from.length>10?s.from.substring(0,9)+'..':s.from;
+      txt(fn, col2x+11+((COL2W-40)/4), ry+10.5, {align:'center'});
+
+      // Arrow
+      st(C.light); doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      txt('>', col2x+11+(COL2W-40)/2+2, ry+8.5);
+
+      // RECEIVES block
+      var rx2=col2x+11+(COL2W-40)/2+6;
+      sf(C.mintLight); doc.roundedRect(rx2, ry+1.5, (COL2W-40)/2, 11, 1.5, 1.5, 'F');
+      st(C.forest); doc.setFont('helvetica','bold'); doc.setFontSize(5.5);
+      txt('RECEIVES', rx2+((COL2W-40)/4), ry+5.5, {align:'center'});
+      st(C.nearBlack); doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+      var tn=s.to.length>10?s.to.substring(0,9)+'..':s.to;
+      txt(tn, rx2+((COL2W-40)/4), ry+10.5, {align:'center'});
+
+      ry+=sh+2;
     });
-    y+=2;sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
-    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('TOTAL TO TRANSFER',s1,y+5);doc.text(fmt(totalSettled),s5,y+5,{align:'right'});
-    y+=11;
   }
-  drawFooter();
-  doc.save(currentTrip.name.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'_report.pdf');
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // SECTION 4 — EXPENSE BREAKDOWN TABLE (full width)
+  // ═══════════════════════════════════════════════════════════════════════════
+  var tableTop = Math.max(ly, ry) + 4;
+
+  // Check remaining space — leave 18mm for footer
+  var remaining = PH - tableTop - 18;
+
+  tableTop = sectionLabel('EXPENSE BREAKDOWN', PAD, tableTop, CW, C.sky);
+
+  // Table cols
+  var ec=[
+    {label:'DESCRIPTION', x:PAD+3,       w:CW*0.30},
+    {label:'PAID BY',     x:PAD+CW*0.32, w:CW*0.17},
+    {label:'SPLIT',       x:PAD+CW*0.51, w:CW*0.11, align:'center'},
+    {label:'DATE',        x:PAD+CW*0.63, w:CW*0.13, align:'center'},
+    {label:'AMOUNT',      x:PAD+CW,      w:0,        align:'right'}
+  ];
+
+  // Table header
+  sf(C.dark); doc.rect(PAD, tableTop, CW, 5.5, 'F');
+  st(C.white); doc.setFont('helvetica','bold'); doc.setFontSize(6.5);
+  ec.forEach(function(c){
+    var tx=c.align==='right'?PAD+CW-3:(c.align==='center'?c.x+c.w/2:c.x);
+    txt(c.label, tx, tableTop+3.8, {align:c.align||'left'});
+  });
+  tableTop+=5.5;
+
+  var visibleRows=Math.floor(remaining/5.8) - 2;
+  var showExps=exps.slice(-Math.max(visibleRows,5));
+  if(exps.length>showExps.length){
+    // Note about truncation — added at end
+  }
+
+  showExps.forEach(function(exp,i){
+    var rh=5.8;
+    if(tableTop+rh > PH-20) return; // safety
+    if(i%2===0){sf(C.white); doc.rect(PAD,tableTop,CW,rh,'F');}
+    else{sf([244,249,246]); doc.rect(PAD,tableTop,CW,rh,'F');}
+
+    // Split type color indicator
+    var sColor=exp.splitType==='perHead'?C.forest:C.gold;
+    sf(sColor); doc.rect(PAD,tableTop,2,rh,'F');
+
+    st(C.nearBlack); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    var desc=exp.description.length>28?exp.description.substring(0,26)+'..':exp.description;
+    txt(desc, PAD+4, tableTop+3.8);
+
+    st(C.dark); doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    var pb=exp.paidBy.length>14?exp.paidBy.substring(0,13)+'..':exp.paidBy;
+    txt(pb, PAD+CW*0.32, tableTop+3.8);
+
+    // Split badge
+    var sbg=exp.splitType==='perHead'?C.mint:C.goldLight;
+    var sborder=exp.splitType==='perHead'?C.sage:C.gold;
+    sf(sbg); doc.roundedRect(PAD+CW*0.51, tableTop+0.8, CW*0.11, 4, 1, 1, 'F');
+    st(sColor); doc.setFont('helvetica','bold'); doc.setFontSize(6);
+    txt(exp.splitType==='perHead'?'Per Head':'Per Fam.', PAD+CW*0.51+CW*0.055, tableTop+3.8, {align:'center'});
+
+    st(C.mid); doc.setFont('helvetica','normal'); doc.setFontSize(7);
+    txt(new Date(exp.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'}), PAD+CW*0.63+CW*0.065, tableTop+3.8, {align:'center'});
+
+    st(C.nearBlack); doc.setFont('helvetica','bold'); doc.setFontSize(7);
+    txt(fmt(exp.amount), PAD+CW-3, tableTop+3.8, {align:'right'});
+    tableTop+=rh;
+  });
+
+  // Totals row
+  sf(C.mint); doc.rect(PAD, tableTop, CW, 6.5, 'F');
+  st(C.forest); doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+  txt('GRAND TOTAL', PAD+4, tableTop+4.3);
+  txt('Per Head: '+fmt(cpHead)+'   Per Family: '+fmt(cpFam), PAD+CW*0.32, tableTop+4.3);
+  txt(fmt(totExp), PAD+CW-3, tableTop+4.3, {align:'right'});
+  tableTop+=6.5;
+
+  if(exps.length>showExps.length){
+    st(C.mid); doc.setFont('helvetica','italic'); doc.setFontSize(6.5);
+    txt('* Showing '+showExps.length+' of '+exps.length+' expenses', PAD+4, tableTop+5);
+    tableTop+=8;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // FOOTER
+  // ═══════════════════════════════════════════════════════════════════════════
+  var FY=PH-10;
+  sf(C.forestDark); doc.rect(0, FY-4, PW, 14, 'F');
+  sf(C.sage); doc.rect(0, FY-4, PW, 1, 'F');
+
+  st([140,185,160]); doc.setFont('helvetica','normal'); doc.setFontSize(6.5);
+  txt('Picnic Manager  •  Trip Expense Report', PAD, FY+3);
+  txt(currentTrip.name+' — '+tripDate+'  |  '+parts.length+' families, '+totHds+' members', PW/2, FY+3, {align:'center'});
+  st([100,150,125]); txt('Page 1', PW-PAD, FY+3, {align:'right'});
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  doc.save(currentTrip.name.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'_dashboard.pdf');
 }
 </script>
 </body>
