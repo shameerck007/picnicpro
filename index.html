@@ -69,10 +69,11 @@ input,select{-webkit-appearance:none;appearance:none;}
     display:flex;align-items:center;justify-content:center;z-index:9999;
   }
   body{padding-top:48px;}
-  #app-page{flex:1;display:flex;flex-direction:column;border-radius:40px;overflow:hidden;}
+  #app-page{flex:1;display:flex !important;flex-direction:column;border-radius:40px;overflow:hidden;}
   .bottom-nav{position:sticky !important;bottom:0 !important;border-radius:0 0 40px 40px;}
   .topbar{border-radius:0 !important;}
-  #app-page .tab-content.active{flex:1;overflow-y:auto;}
+  /* On desktop the tab content scrolls inside the shell */
+  #app-page .tab-content.active{flex:1;overflow-y:auto;min-height:0;}
 
   /* Desktop: sheet overlays centered, don't need nav offset */
   .sheet-overlay{align-items:center;}
@@ -80,14 +81,19 @@ input,select{-webkit-appearance:none;appearance:none;}
 }
 
 /* ═══════════════════════════════════════════
-   MOBILE
+   MOBILE — fixed shell approach
+   The app-shell takes the fixed viewport role.
+   body stays normal so iOS scroll never breaks.
 ═══════════════════════════════════════════ */
 @media (max-width:767px){
-  #app-shell{width:100%;min-height:100vh;}
-  body{position:fixed;width:100%;height:100%;overflow:hidden;}
-  #app-page{height:100%;overflow:hidden;display:flex;flex-direction:column;}
-  #app-page .tab-content.active{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  body{
+    position:static;
+    width:100%;
+    height:auto;
+    overflow:auto;
+  }
 
+  /* Auth: full screen fixed, scrolls independently */
   #auth-page.active{
     position:fixed !important;
     inset:0 !important;
@@ -97,25 +103,62 @@ input,select{-webkit-appearance:none;appearance:none;}
     padding:20px !important;
     padding-top:max(24px, env(safe-area-inset-top, 0px)) !important;
     padding-bottom:max(32px, env(safe-area-inset-bottom, 0px)) !important;
+    z-index:10;
   }
   #auth-page.active .auth-card{
-    margin:0 auto;
-    margin-top:12px;
-    margin-bottom:12px;
+    margin:12px auto;
   }
 
-  .bottom-nav{padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));}
+  /* Shell: fixed full-screen container */
+  #app-shell{
+    position:fixed !important;
+    top:0 !important;
+    left:0 !important;
+    right:0 !important;
+    bottom:0 !important;
+    width:100% !important;
+    height:100% !important;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
 
-  /* ── KEY FIX: Sheet stops above the bottom nav so nav stays visible ── */
+  /* App page fills shell, column flex */
+  #app-page{
+    flex:1;
+    min-height:0;
+    display:flex !important;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* Topbar never shrinks */
+  .topbar{flex-shrink:0 !important;}
+
+  /* Tab content: takes remaining space and scrolls */
+  #app-page .tab-content.active{
+    flex:1 !important;
+    min-height:0 !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain;
+  }
+
+  /* Nav: never shrinks, always at bottom */
+  .bottom-nav{
+    flex-shrink:0 !important;
+    padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Sheet: sits above content but BELOW nav (nav z-index:300 wins) */
   .sheet-overlay{
-    /* Don't cover the whole screen — leave room for the nav at the bottom */
     bottom:var(--nav-h) !important;
-    /* Also push the bottom of the backdrop up */
   }
-  /* The sheet itself also needs to not overlap the nav */
   .sheet{
     padding-bottom:16px !important;
     border-radius:28px 28px 0 0 !important;
+    max-height:calc(100svh - var(--nav-h) - 20px);
+    overflow-y:auto;
   }
 }
 
@@ -170,7 +213,7 @@ input,select{-webkit-appearance:none;appearance:none;}
    APP PAGE
 ═══════════════════════════════════════════ */
 #app-page{display:none;background:var(--cream);}
-#app-page.active{display:flex;}
+#app-page.active{display:flex;flex-direction:column;}
 
 .topbar{
   background:rgba(255,255,255,0.95);border-bottom:1px solid var(--border);
@@ -205,9 +248,9 @@ input,select{-webkit-appearance:none;appearance:none;}
 .nav-item.active .nav-icon{background:var(--mint2);}
 
 /* ── TAB CONTENT ── */
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-.page-content{padding:16px;max-width:100%;}
+.tab-content{display:none;min-height:0;}
+.tab-content.active{display:flex;flex-direction:column;flex:1;min-height:0;overflow-y:auto;}
+.page-content{padding:16px;max-width:100%;flex:1;}
 
 /* ── CARDS ── */
 .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
@@ -574,7 +617,7 @@ function startApp(user){
   currentUser=user;
   document.getElementById('auth-page').classList.remove('active');
   document.getElementById('auth-page').style.display='none';
-  document.getElementById('app-shell').style.display='block';
+  document.getElementById('app-shell').style.display='flex';
   document.getElementById('app-page').classList.add('active');
   document.getElementById('topbar-hi').textContent='Hi, '+user.fullName.split(' ')[0]+' 👋';
   loadData();renderAll();switchTab('home');
