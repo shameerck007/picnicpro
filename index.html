@@ -395,7 +395,7 @@ input,select{-webkit-appearance:none;appearance:none;}
           </div>
         </div>
         <div class="flex-row" style="gap:8px;">
-          <button class="pdf-btn" id="pdf-btn-top" onclick="generatePDF()" style="display:none;">📄 Report</button>
+          <button class="pdf-btn" id="pdf-btn-top" onclick="generatePDF()" style="display:none;">📄 PDF Report</button>
           <button class="btn-sm btn-red" onclick="doLogout()">Logout</button>
         </div>
       </div>
@@ -683,7 +683,6 @@ function renderHome(){
     el.innerHTML='<div class="empty"><div class="empty-icon">🌿</div><div class="empty-title">No trips yet</div><div class="empty-sub">Create your first group trip</div><br><button class="primary-btn" style="max-width:220px;margin:16px auto 0;display:block;" onclick="openSheet(\'sheet-trip\')">+ Create Trip</button></div>';
     return;
   }
-  var hasPDF=parts.length>0&&exps.length>0;
   var html='';
   html+='<div class="trip-header-card">';
   html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
@@ -692,7 +691,7 @@ function renderHome(){
   html+='<div style="font-family:Sora,sans-serif;font-weight:800;font-size:22px;color:#fff;line-height:1.2;">'+esc(currentTrip.name)+'</div>';
   html+='<div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:6px;font-weight:500;">📅 '+new Date(currentTrip.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})+'</div>';
   html+='</div>';
-  if(hasPDF)html+='<button class="pdf-btn" onclick="generatePDF()" style="flex-shrink:0;">📄 PDF</button>';
+
   html+='</div></div>';
   html+='<div class="kpi-grid">';
   html+='<div class="kpi-card" style="background:linear-gradient(135deg,#e8f5ec,#d6f0e0);"><div class="kpi-icon">👥</div><div class="kpi-val" style="color:#1a3a2a;">'+parts.length+'</div><div class="kpi-lbl" style="color:#4a7c59;">Families</div></div>';
@@ -1074,35 +1073,7 @@ function generatePDF(){
   doc.text(fmt(totExp),e5,y+5,{align:'right'});
   y+=11;
 
-  sectionHead('3. Per-Participant Expense Breakdown');
-  parts.forEach(function(p){
-    newPageIfNeeded(36);
-    doc.setFillColor(245,248,246);doc.roundedRect(ML,y,CW,9,1,1,'F');
-    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
-    doc.text(p.name+' ('+p.familyMembers+' member'+(p.familyMembers>1?'s':'')+')',ML+4,y+6.5);
-    doc.text('Share: '+fmt(cpHead*p.familyMembers),ML+CW-2,y+6.5,{align:'right'});
-    y+=11;
-    exps.forEach(function(exp,ei){
-      newPageIfNeeded(9);
-      var th=parts.reduce(function(s,pp){return s+pp.familyMembers;},0);
-      var spu=exp.splitType==='perHead'&&th>0?exp.amount/th:(parts.length>0?exp.amount/parts.length:0);
-      var myShare=exp.splitType==='perHead'?spu*p.familyMembers:spu;
-      var iPaid=exp.paidBy===p.name;
-      if(ei%2===0){sf([245,248,246]);}else{sf(WHITE);}
-      doc.rect(ML,y-1,CW,9,'F');
-      st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
-      var dn=exp.description.length>32?exp.description.substring(0,30)+'..':exp.description;
-      doc.text(dn,ML+6,y+5);
-      if(iPaid){st(GREEN);doc.setFontSize(6.5);doc.text('[PAID]',ML+CW-28,y+5);}
-      if(iPaid)st(GREEN);else st(DARK);
-      doc.setFont('helvetica','bold');doc.setFontSize(8);
-      doc.text(fmt(myShare),ML+CW-2,y+5,{align:'right'});
-      y+=9;
-    });
-    y+=6;
-  });
-
-  sectionHead('4. Settlement Transactions');
+  sectionHead('3. Settlement Transactions');
   if(settlements.length===0){
     newPageIfNeeded(14);
     sf(GREEN_L);doc.roundedRect(ML,y,CW,12,1.5,1.5,'F');
