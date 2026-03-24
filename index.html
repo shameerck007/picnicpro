@@ -28,24 +28,11 @@
   --shadow:0 2px 20px rgba(26,58,42,0.08);
   --shadow-lg:0 8px 40px rgba(26,58,42,0.14);
   --radius:20px;--radius-sm:14px;--radius-xs:10px;
-
-  /* Desktop layout */
   --desktop-max:480px;
   --desktop-breakpoint:768px;
 }
-
-html{
-  height:100%;
-  /* iOS momentum scroll */
-  -webkit-overflow-scrolling:touch;
-}
-body{
-  min-height:100%;
-  font-family:'Manrope',sans-serif;
-  background:var(--cream);
-  color:var(--text);
-  overflow-x:hidden;
-}
+html{height:100%;-webkit-overflow-scrolling:touch;}
+body{min-height:100%;font-family:'Manrope',sans-serif;background:var(--cream);color:var(--text);overflow-x:hidden;}
 h1,h2,h3,h4,h5{font-family:'Sora',sans-serif;}
 input,select,textarea,button{font-family:'Manrope',sans-serif;font-size:16px;}
 button{cursor:pointer;min-height:44px;}
@@ -54,77 +41,39 @@ input,select{-webkit-appearance:none;appearance:none;}
 ::-webkit-scrollbar-thumb{background:var(--sage2);border-radius:4px;}
 
 /* ═══════════════════════════════════════════
-   DESKTOP SHELL — centers everything when >= 768px
+   DESKTOP SHELL
 ═══════════════════════════════════════════ */
 @media (min-width:768px){
   body{
     background:linear-gradient(135deg,#e8f5ec 0%,#f0f7f3 40%,#faf7f2 100%);
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    min-height:100vh;
-    padding:24px 16px 40px;
+    display:flex;align-items:flex-start;justify-content:center;
+    min-height:100vh;padding:24px 16px 40px;
   }
-
-  /* The phone frame wrapper */
   #app-shell{
-    width:100%;
-    max-width:var(--desktop-max);
-    background:var(--cream);
-    border-radius:40px;
+    width:100%;max-width:var(--desktop-max);
+    background:var(--cream);border-radius:40px;
     box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1),0 0 0 1px rgba(26,58,42,0.08);
-    overflow:hidden;
-    position:relative;
+    overflow:hidden;position:relative;
     min-height:calc(100vh - 48px);
-    display:flex;
-    flex-direction:column;
+    display:flex;flex-direction:column;
   }
-
-  /* Auth also gets the frame */
   #auth-page.active{
-    border-radius:40px;
-    max-width:var(--desktop-max);
-    min-height:calc(100vh - 48px);
-    margin:0 auto;
+    border-radius:40px;max-width:var(--desktop-max);
+    min-height:calc(100vh - 48px);margin:0 auto;
     box-shadow:0 30px 80px rgba(26,58,42,0.22),0 4px 20px rgba(26,58,42,0.1);
     overflow:hidden;
   }
-
-  /* Desktop chrome decoration */
   body::before{
-    content:'Picnic Manager';
-    position:fixed;top:0;left:0;right:0;
-    height:24px;background:var(--forest);
-    color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;
+    content:'Picnic Manager';position:fixed;top:0;left:0;right:0;height:24px;
+    background:var(--forest);color:rgba(255,255,255,0.5);font-family:'Sora',sans-serif;
     font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-    display:flex;align-items:center;justify-content:center;
-    z-index:9999;
+    display:flex;align-items:center;justify-content:center;z-index:9999;
   }
   body{padding-top:48px;}
-
-  #app-page{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    border-radius:40px;
-    overflow:hidden;
-  }
-
-  /* Bottom nav sits at bottom of frame */
-  .bottom-nav{
-    position:sticky !important;
-    bottom:0 !important;
-    border-radius:0 0 40px 40px;
-  }
-
-  /* Topbar rounded at top when in frame */
+  #app-page{flex:1;display:flex;flex-direction:column;border-radius:40px;overflow:hidden;}
+  .bottom-nav{position:sticky !important;bottom:0 !important;border-radius:0 0 40px 40px;}
   .topbar{border-radius:0 !important;}
-
-  /* Scrollable content area */
-  #app-page .tab-content.active{
-    flex:1;
-    overflow-y:auto;
-  }
+  #app-page .tab-content.active{flex:1;overflow-y:auto;}
 }
 
 /* ═══════════════════════════════════════════
@@ -132,39 +81,39 @@ input,select{-webkit-appearance:none;appearance:none;}
 ═══════════════════════════════════════════ */
 @media (max-width:767px){
   #app-shell{width:100%;min-height:100vh;}
+  body{position:fixed;width:100%;height:100%;overflow:hidden;}
+  #app-page{height:100%;overflow:hidden;display:flex;flex-direction:column;}
+  #app-page .tab-content.active{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 
-  body{
-    /* Prevent address bar bounce on iOS */
-    position:fixed;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-  }
-
-  #app-page{
-    height:100%;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-
-  #app-page .tab-content.active{
-    flex:1;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-  }
-
+  /* ── AUTH SCROLL FIX ──
+     The root cause of the signup form not scrolling:
+     The general rule sets display:flex + align-items:center.
+     On mobile, when the form is taller than the screen, flexbox
+     vertical centering clips the top of the overflow and
+     overflow-y:auto cannot scroll to it. Fix: switch to
+     block layout with auto top-margin so short forms still
+     look centered, but tall forms scroll naturally. */
   #auth-page.active{
-    position:fixed;
-    inset:0;
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
+    position:fixed !important;
+    inset:0 !important;
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    /* Override flex centering that breaks scroll */
+    display:block !important;
+    padding:20px !important;
+    padding-top:max(24px, env(safe-area-inset-top, 0px)) !important;
+    padding-bottom:max(32px, env(safe-area-inset-bottom, 0px)) !important;
+  }
+  /* Re-center the card horizontally; use auto vertical margin
+     so it appears centered when content is short */
+  #auth-page.active .auth-card{
+    margin:0 auto;
+    /* Push card down a little so it doesn't stick to the top */
+    margin-top:12px;
+    margin-bottom:12px;
   }
 
-  /* Safe area for bottom nav */
-  .bottom-nav{
-    padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));
-  }
+  .bottom-nav{padding-bottom:max(10px, env(safe-area-inset-bottom, 0px));}
 }
 
 /* ═══════════════════════════════════════════
@@ -174,8 +123,9 @@ input,select{-webkit-appearance:none;appearance:none;}
 #auth-page.active{
   display:flex;
   background:linear-gradient(160deg,var(--cream) 0%,#e8f5ec 50%,#faf7f2 100%);
-  align-items:center;justify-content:center;padding:20px;
-  min-height:100vh;position:relative;overflow:hidden;
+  align-items:center;justify-content:center;
+  padding:20px;min-height:100vh;
+  position:relative;overflow:hidden;
 }
 #auth-page.active::before{
   content:'';position:absolute;inset:0;
@@ -223,7 +173,6 @@ input,select{-webkit-appearance:none;appearance:none;}
   background:rgba(255,255,255,0.95);border-bottom:1px solid var(--border);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   z-index:50;padding:12px 16px;flex-shrink:0;
-  /* iOS status bar spacing */
   padding-top:max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
 }
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;max-width:100%;}
@@ -241,9 +190,7 @@ input,select{-webkit-appearance:none;appearance:none;}
   flex-shrink:0;
   background:rgba(255,255,255,0.97);border-top:1px solid var(--border);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  display:flex;
-  padding:8px 0;
-  /* safe area handled per breakpoint above */
+  display:flex;padding:8px 0;
 }
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;color:var(--text3);font-size:10px;font-weight:600;padding:6px 4px;transition:color 0.2s;cursor:pointer;font-family:'Manrope',sans-serif;}
 .nav-item.active{color:var(--forest2);}
@@ -335,7 +282,7 @@ input,select{-webkit-appearance:none;appearance:none;}
 </head>
 <body>
 
-<!-- AUTH PAGE (outside shell for full-screen) -->
+<!-- AUTH PAGE -->
 <div id="auth-page" class="page active">
   <div class="blob1"></div><div class="blob2"></div><div class="blob3"></div>
   <div class="auth-card">
@@ -347,6 +294,7 @@ input,select{-webkit-appearance:none;appearance:none;}
       <button class="tab-btn" onclick="switchAuthTab('signup')">Sign Up</button>
     </div>
     <div id="auth-alert" class="alert"></div>
+
     <!-- LOGIN -->
     <div id="form-login">
       <div class="form-group"><label class="field-label">Username</label><input class="field-input" id="login-user" type="text" placeholder="your_username" autocomplete="username"></div>
@@ -354,6 +302,7 @@ input,select{-webkit-appearance:none;appearance:none;}
       <button class="primary-btn" onclick="doLogin()">Sign In →</button>
       <button class="link-btn" style="margin-top:12px;" onclick="switchAuthTab('reset')">Forgot password?</button>
     </div>
+
     <!-- SIGNUP -->
     <div id="form-signup" style="display:none;">
       <div class="form-group"><label class="field-label">Full Name</label><input class="field-input" id="su-name" type="text" placeholder="John Smith" autocomplete="name"></div>
@@ -374,6 +323,7 @@ input,select{-webkit-appearance:none;appearance:none;}
       <div class="form-group"><label class="field-label">Confirm Password</label><input class="field-input" id="su-cpass" type="password" placeholder="••••••" autocomplete="new-password"></div>
       <button class="primary-btn" onclick="doSignup()">Create Account →</button>
     </div>
+
     <!-- RESET -->
     <div id="form-reset" style="display:none;">
       <div style="background:rgba(58,127,168,0.07);border:1px solid rgba(58,127,168,0.2);border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:var(--sky);font-weight:600;">🔑 Enter your username to recover your account</div>
@@ -390,7 +340,7 @@ input,select{-webkit-appearance:none;appearance:none;}
   </div>
 </div>
 
-<!-- APP SHELL (phone frame on desktop) -->
+<!-- APP SHELL -->
 <div id="app-shell" style="display:none;">
   <div id="app-page" class="page">
     <div class="topbar">
@@ -513,6 +463,9 @@ function switchAuthTab(tab){
   btns[0].className='tab-btn'+(tab==='login'?' active':'');
   btns[1].className='tab-btn'+(tab==='signup'?' active':'');
   document.getElementById('auth-tabs').style.display=tab==='reset'?'none':'flex';
+  // Scroll auth page to top when switching tabs so user sees the form start
+  var ap=document.getElementById('auth-page');
+  if(ap)ap.scrollTop=0;
 }
 function doLogin(){
   clearAlert();var u=document.getElementById('login-user').value.trim();var p=document.getElementById('login-pass').value;
@@ -605,7 +558,6 @@ function switchTab(tab){
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   document.getElementById('tab-'+tab).classList.add('active');
   document.getElementById('nav-'+tab).classList.add('active');
-  // scroll tab content to top
   var tc=document.getElementById('tab-'+tab);
   if(tc)tc.scrollTop=0;
   renderTab(tab);
@@ -935,73 +887,40 @@ function removeExpense(id){
 function openSheet(id){document.getElementById(id).classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 
-/* ============================================================ PDF — Clean A4 Report */
+/* ============================================================ PDF */
 function generatePDF(){
   if(typeof window.jspdf==='undefined'){alert('PDF library loading, please try again.');return;}
   var jsPDF=window.jspdf.jsPDF;
   var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  // ── Page dimensions & margins ──────────────────────────────
-  var W=210, H=297, ML=14, MR=14, MT=14, MB=14;
+  var W=210,H=297,ML=14,MR=14,MT=14,MB=14;
   var CW=W-ML-MR;
   var y=MT;
-
-  // ── Data ───────────────────────────────────────────────────
-  var parts=getParts(), exps=getExps();
-  var settlements=calcSettlements(), bal=calcBal();
-  var cpHead=cph(), totExp=totalExp(), totHds=totalHeads();
+  var parts=getParts(),exps=getExps();
+  var settlements=calcSettlements(),bal=calcBal();
+  var cpHead=cph(),totExp=totalExp(),totHds=totalHeads();
   var totalSettled=settlements.reduce(function(s,t){return s+t.amount;},0);
   var tripDate=new Date(currentTrip.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   var genDate=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-
-  // ── Colors ─────────────────────────────────────────────────
-  var GREEN=[26,90,55],   GREEN_L=[210,240,225];
-  var DARK=[30,40,35],    GRAY=[100,110,105],   LGRAY=[220,225,222];
-  var RED=[180,50,40],    RED_L=[250,235,232];
-  var BLUE=[40,90,160],   BLUE_L=[232,240,252];
-  var WHITE=[255,255,255];
-
-  // ── Helpers ────────────────────────────────────────────────
+  var GREEN=[26,90,55],GREEN_L=[210,240,225],DARK=[30,40,35],GRAY=[100,110,105],LGRAY=[220,225,222];
+  var RED=[180,50,40],RED_L=[250,235,232],BLUE=[40,90,160],BLUE_L=[232,240,252],WHITE=[255,255,255];
   function sf(col){doc.setFillColor(col[0],col[1],col[2]);}
   function st(col){doc.setTextColor(col[0],col[1],col[2]);}
   function sd(col){doc.setDrawColor(col[0],col[1],col[2]);}
-  function rule(ry,col){sd(col||LGRAY);doc.setLineWidth(0.25);doc.line(ML,ry,ML+CW,ry);}
-
-  function newPageIfNeeded(need){
-    if(y+need>H-MB-8){
-      // Footer on current page
-      drawFooter();
-      doc.addPage();
-      y=MT;
-      drawHeader(false);
-    }
-  }
-
-  // ── Section heading ────────────────────────────────────────
+  function newPageIfNeeded(need){if(y+need>H-MB-8){drawFooter();doc.addPage();y=MT;drawHeader(false);}}
   function sectionHead(title){
-    newPageIfNeeded(10);
-    y+=3;
+    newPageIfNeeded(10);y+=3;
     st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
     doc.text(title.toUpperCase(),ML,y);
-    y+=1.5;
-    sd(GREEN);doc.setLineWidth(0.4);doc.line(ML,y,ML+CW,y);
-    y+=4;
+    y+=1.5;sd(GREEN);doc.setLineWidth(0.4);doc.line(ML,y,ML+CW,y);y+=4;
   }
-
-  // ── Table header row ───────────────────────────────────────
   function tableHead(cols){
-    // cols = [{label,x,w,align}]
     sf(DARK);doc.rect(ML,y,CW,6,'F');
     st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
-    cols.forEach(function(c){
-      doc.text(c.label,c.x+(c.align==='right'?c.w:0),y+4.3,{align:c.align||'left',maxWidth:c.w});
-    });
+    cols.forEach(function(c){doc.text(c.label,c.x+(c.align==='right'?c.w:0),y+4.3,{align:c.align||'left',maxWidth:c.w});});
     y+=6;
   }
-
-  // ── Table data row ─────────────────────────────────────────
   function tableRow(cols,i){
-    var rh=6.5;
-    newPageIfNeeded(rh);
+    var rh=6.5;newPageIfNeeded(rh);
     if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,rh,'F');}
     st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
     cols.forEach(function(c){
@@ -1011,11 +930,8 @@ function generatePDF(){
     });
     y+=rh;
   }
-
-  // ── Page header (repeated on page 2+) ──────────────────────
   function drawHeader(isCover){
     if(isCover){
-      // Full cover header bar
       sf(GREEN);doc.rect(0,0,W,22,'F');
       st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(15);
       doc.text(currentTrip.name,ML,13);
@@ -1024,8 +940,7 @@ function generatePDF(){
       st([200,230,215]);doc.setFontSize(7);
       doc.text('Generated: '+genDate,W-MR,19,{align:'right'});
       y=28;
-    } else {
-      // Slim continuation header
+    }else{
       sf(GREEN);doc.rect(0,0,W,8,'F');
       st(WHITE);doc.setFont('helvetica','bold');doc.setFontSize(7.5);
       doc.text(currentTrip.name+' — Settlement Report (continued)',ML,5.5);
@@ -1033,8 +948,6 @@ function generatePDF(){
       y=14;
     }
   }
-
-  // ── Page footer ────────────────────────────────────────────
   function drawFooter(){
     var fy=H-7;
     sd(LGRAY);doc.setLineWidth(0.25);doc.line(ML,fy-2,ML+CW,fy-2);
@@ -1043,20 +956,9 @@ function generatePDF(){
     doc.text(currentTrip.name+' · '+tripDate,W/2,fy,{align:'center'});
     doc.text('Page '+doc.internal.getCurrentPageInfo().pageNumber,W-MR,fy,{align:'right'});
   }
-
-  // ═══════════════════════════════════════════════════
-  //  COVER HEADER
-  // ═══════════════════════════════════════════════════
   drawHeader(true);
-
-  // ── Summary KPI boxes (4 in a row) ─────────────────────────
-  var kw=(CW-6)/4, kh=16, kg=2;
-  var kpis=[
-    {l:'Families',   v:parts.length},
-    {l:'Total Heads',v:totHds},
-    {l:'Total Spent',v:fmt(totExp)},
-    {l:'Cost / Head', v:fmt(cpHead)},
-  ];
+  var kw=(CW-6)/4,kh=16,kg=2;
+  var kpis=[{l:'Families',v:parts.length},{l:'Total Heads',v:totHds},{l:'Total Spent',v:fmt(totExp)},{l:'Cost / Head',v:fmt(cpHead)}];
   kpis.forEach(function(k,i){
     var kx=ML+i*(kw+kg);
     sf(GREEN_L);doc.roundedRect(kx,y,kw,kh,1.5,1.5,'F');
@@ -1067,31 +969,17 @@ function generatePDF(){
     doc.text(k.l,kx+kw/2,y+13,{align:'center'});
   });
   y+=kh+6;
-
-  // ── Trip details line ───────────────────────────────────────
   st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
   doc.text('Trip Date: '+tripDate+'   |   Expenses: '+exps.length+'   |   Currency: '+currency.code+'   |   Per Family: '+fmt(cpf()),ML,y);
   y+=6;
-
-  // ═══════════════════════════════════════════════════
-  //  SECTION 1: PARTICIPANTS & BALANCES
-  // ═══════════════════════════════════════════════════
   sectionHead('1. Participants & Balances');
-
-  var c1=ML, c2=ML+46, c3=ML+70, c4=ML+94, c5=ML+118, c6=ML+CW;
-  tableHead([
-    {label:'Participant',x:c1,w:44,align:'left'},
-    {label:'Members',   x:c2,w:22,align:'left'},
-    {label:'Paid',      x:c3,w:22,align:'left'},
-    {label:'Fair Share',x:c4,w:22,align:'left'},
-    {label:'Balance',   x:c5,w:CW-(c5-ML),align:'right'},
-  ]);
-
+  var c1=ML,c2=ML+46,c3=ML+70,c4=ML+94,c5=ML+118,c6=ML+CW;
+  tableHead([{label:'Participant',x:c1,w:44},{label:'Members',x:c2,w:22},{label:'Paid',x:c3,w:22},{label:'Fair Share',x:c4,w:22},{label:'Balance',x:c5,w:CW-(c5-ML),align:'right'}]);
   parts.forEach(function(p,i){
     var b=bal[p.name]||0;
     var paid=exps.filter(function(e){return e.paidBy===p.name;}).reduce(function(s,e){return s+e.amount;},0);
     var share=cpHead*p.familyMembers;
-    var isPos=b>0.001, isNeg=b<-0.001;
+    var isPos=b>0.001,isNeg=b<-0.001;
     var bStr=(isPos?'+ ':isNeg?'- ':'')+fmt(Math.abs(b));
     var bCol=isPos?GREEN:isNeg?RED:GRAY;
     newPageIfNeeded(6.5);
@@ -1100,35 +988,17 @@ function generatePDF(){
     doc.text(p.name.length>18?p.name.substring(0,16)+'..':p.name,c1,y+4.5);
     doc.setFont('helvetica','normal');
     doc.text(String(p.familyMembers)+(p.familyMembers>1?' pax':' pax'),c2,y+4.5);
-    doc.text(fmt(paid),c3,y+4.5);
-    doc.text(fmt(share),c4,y+4.5);
-    st(bCol);doc.setFont('helvetica','bold');
-    doc.text(bStr,c6,y+4.5,{align:'right'});
+    doc.text(fmt(paid),c3,y+4.5);doc.text(fmt(share),c4,y+4.5);
+    st(bCol);doc.setFont('helvetica','bold');doc.text(bStr,c6,y+4.5,{align:'right'});
     y+=6.5;
   });
-  // Totals row
   sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
   st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-  doc.text('TOTAL',c1,y+5);
-  doc.text(fmt(totExp),c3,y+5);
-  doc.text(fmt(totExp),c4,y+5);
-  doc.text('—',c6,y+5,{align:'right'});
+  doc.text('TOTAL',c1,y+5);doc.text(fmt(totExp),c3,y+5);doc.text(fmt(totExp),c4,y+5);doc.text('—',c6,y+5,{align:'right'});
   y+=11;
-
-  // ═══════════════════════════════════════════════════
-  //  SECTION 2: EXPENSE BREAKDOWN
-  // ═══════════════════════════════════════════════════
   sectionHead('2. Expense Breakdown');
-
-  var e1=ML, e2=ML+62, e3=ML+100, e4=ML+122, e5=ML+CW;
-  tableHead([
-    {label:'Description', x:e1,w:60, align:'left'},
-    {label:'Paid By',     x:e2,w:36, align:'left'},
-    {label:'Split',       x:e3,w:20, align:'left'},
-    {label:'Date',        x:e4,w:20, align:'left'},
-    {label:'Amount',      x:e5,w:CW-(e5-ML),align:'right'},
-  ]);
-
+  var e1=ML,e2=ML+62,e3=ML+100,e4=ML+122,e5=ML+CW;
+  tableHead([{label:'Description',x:e1,w:60},{label:'Paid By',x:e2,w:36},{label:'Split',x:e3,w:20},{label:'Date',x:e4,w:20},{label:'Amount',x:e5,w:CW-(e5-ML),align:'right'}]);
   exps.forEach(function(exp,i){
     newPageIfNeeded(6.5);
     if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,6.5,'F');}
@@ -1136,16 +1006,12 @@ function generatePDF(){
     var pBy=exp.paidBy.length>18?exp.paidBy.substring(0,16)+'..':exp.paidBy;
     var expDate=new Date(exp.date).toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
     st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(8);
-    doc.text(desc,e1,y+4.5);
-    doc.text(pBy,e2,y+4.5);
-    st(exp.splitType==='perHead'?GREEN:GRAY);
-    doc.text(exp.splitType==='perHead'?'Per Head':'Per Fam.',e3,y+4.5);
+    doc.text(desc,e1,y+4.5);doc.text(pBy,e2,y+4.5);
+    st(exp.splitType==='perHead'?GREEN:GRAY);doc.text(exp.splitType==='perHead'?'Per Head':'Per Fam.',e3,y+4.5);
     st(GRAY);doc.text(expDate,e4,y+4.5);
-    st(DARK);doc.setFont('helvetica','bold');
-    doc.text(fmt(exp.amount),e5,y+4.5,{align:'right'});
+    st(DARK);doc.setFont('helvetica','bold');doc.text(fmt(exp.amount),e5,y+4.5,{align:'right'});
     y+=6.5;
   });
-  // Grand total
   sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
   st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
   doc.text('GRAND TOTAL',e1,y+5);
@@ -1153,63 +1019,65 @@ function generatePDF(){
   doc.text(fmt(totExp),e5,y+5,{align:'right'});
   y+=11;
 
-  // ═══════════════════════════════════════════════════
-  //  SECTION 3: SETTLEMENT TRANSACTIONS
-  // ═══════════════════════════════════════════════════
-  sectionHead('3. Settlement Transactions');
+  // Per-participant breakdown
+  sectionHead('3. Per-Participant Expense Breakdown');
+  parts.forEach(function(p){
+    newPageIfNeeded(36);
+    doc.setFillColor(245,248,246);doc.roundedRect(ML,y,CW,9,1,1,'F');
+    st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
+    doc.text(p.name+' ('+p.familyMembers+' member'+(p.familyMembers>1?'s':'')+')',ML+4,y+6.5);
+    doc.text('Share: '+fmt(cpHead*p.familyMembers),ML+CW-2,y+6.5,{align:'right'});
+    y+=11;
+    exps.forEach(function(exp,ei){
+      newPageIfNeeded(9);
+      var th=parts.reduce(function(s,pp){return s+pp.familyMembers;},0);
+      var spu=exp.splitType==='perHead'&&th>0?exp.amount/th:(parts.length>0?exp.amount/parts.length:0);
+      var myShare=exp.splitType==='perHead'?spu*p.familyMembers:spu;
+      var iPaid=exp.paidBy===p.name;
+      if(ei%2===0){sf([245,248,246]);}else{sf(WHITE);}
+      doc.rect(ML,y-1,CW,9,'F');
+      st(DARK);doc.setFont('helvetica','normal');doc.setFontSize(7.5);
+      var dn=exp.description.length>32?exp.description.substring(0,30)+'..':exp.description;
+      doc.text(dn,ML+6,y+5);
+      if(iPaid){st(GREEN);doc.setFontSize(6.5);doc.text('[PAID]',ML+CW-28,y+5);}
+      if(iPaid)st(GREEN);else st(DARK);
+      doc.setFont('helvetica','bold');doc.setFontSize(8);
+      doc.text(fmt(myShare),ML+CW-2,y+5,{align:'right'});
+      y+=9;
+    });
+    y+=6;
+  });
 
+  sectionHead('4. Settlement Transactions');
   if(settlements.length===0){
     newPageIfNeeded(14);
     sf(GREEN_L);doc.roundedRect(ML,y,CW,12,1.5,1.5,'F');
     st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(9);
     doc.text('All Settled — No transactions required',W/2,y+7.5,{align:'center'});
     y+=16;
-  } else {
-    var s1=ML, s2=ML+8, s3=ML+70, s4=ML+80, s5=ML+CW;
-    tableHead([
-      {label:'#',       x:s1,w:7,  align:'left'},
-      {label:'Pays',    x:s2,w:60, align:'left'},
-      {label:'',        x:s3,w:8,  align:'left'},
-      {label:'Receives',x:s4,w:80, align:'left'},
-      {label:'Amount',  x:s5,w:CW-(s5-ML),align:'right'},
-    ]);
-
+  }else{
+    var s1=ML,s2=ML+8,s3=ML+70,s4=ML+80,s5=ML+CW;
+    tableHead([{label:'#',x:s1,w:7},{label:'Pays',x:s2,w:60},{label:'',x:s3,w:8},{label:'Receives',x:s4,w:80},{label:'Amount',x:s5,w:CW-(s5-ML),align:'right'}]);
     settlements.forEach(function(s,i){
       newPageIfNeeded(7);
       if(i%2===1){sf([245,248,246]);doc.rect(ML,y,CW,7,'F');}
-      // index
-      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(8);
-      doc.text(String(i+1),s1,y+5);
-      // payer
+      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.text(String(i+1),s1,y+5);
       sf(RED_L);doc.roundedRect(s2,y+0.8,58,5.5,1,1,'F');
       st(RED);doc.setFont('helvetica','bold');doc.setFontSize(8);
-      var payer=s.from.length>20?s.from.substring(0,18)+'..':s.from;
-      doc.text(payer,s2+29,y+5,{align:'center'});
-      // arrow
-      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(9);
-      doc.text('→',s3+1,y+5);
-      // receiver
+      doc.text(s.from.length>20?s.from.substring(0,18)+'..':s.from,s2+29,y+5,{align:'center'});
+      st(GRAY);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text('→',s3+1,y+5);
       sf(GREEN_L);doc.roundedRect(s4,y+0.8,58,5.5,1,1,'F');
       st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-      var recv=s.to.length>20?s.to.substring(0,18)+'..':s.to;
-      doc.text(recv,s4+29,y+5,{align:'center'});
-      // amount
+      doc.text(s.to.length>20?s.to.substring(0,18)+'..':s.to,s4+29,y+5,{align:'center'});
       st(DARK);doc.text(fmt(s.amount),s5,y+5,{align:'right'});
       y+=7;
     });
-
-    // Summary total
-    y+=2;
-    sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
+    y+=2;sf(GREEN_L);doc.rect(ML,y,CW,7,'F');
     st(GREEN);doc.setFont('helvetica','bold');doc.setFontSize(8);
-    doc.text('TOTAL TO TRANSFER',s1,y+5);
-    doc.text(fmt(totalSettled),s5,y+5,{align:'right'});
+    doc.text('TOTAL TO TRANSFER',s1,y+5);doc.text(fmt(totalSettled),s5,y+5,{align:'right'});
     y+=11;
   }
-
-  // ── Footer on last page ─────────────────────────────────────
   drawFooter();
-
   doc.save(currentTrip.name.replace(/[^a-z0-9]/gi,'_').toLowerCase()+'_report.pdf');
 }
 </script>
